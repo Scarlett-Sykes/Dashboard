@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-image: url('caytoo_Report cover template V2.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center 20%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      padding: 40px 20px;
+      color: #fff;
+    }
+
+    h1 {
+      margin-bottom: 40px;
+      font-size: 2.2em;
+      text-align: center;
+      color: white;
+    }
+
+    /* Grid container */
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, auto);
+      gap: 20px;
+      width: 100%;
+      max-width: 1100px;
+    }
+
+    /* Individual boxes */
+    .button-box {
+      background-color: #FFF5F580;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .box-title {
+      font-size: 1.4em;
+      margin-bottom: 10px;
+      color: #fff;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .custom-button {
+      background: linear-gradient(180deg, #FF5476, #FF5156);
+      color: white;
+      font-weight: bold;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 9999px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      font-size: 16px;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      width: 100%;
+      max-width: 400px;
+      transition: opacity 0.3s ease, transform 0.2s ease;
+    }
+
+    .custom-button:hover {
+      opacity: 0.9;
+      transform: scale(1.03);
+    }
+  
+    /* New: inactive/disabled button styling */
+    .custom-button.inactive {
+      background: #e5e7eb;        /* grey background */
+      color: #6b7280;             /* grey text */
+      border: 1px solid #d1d5db;  /* subtle border */
+      cursor: not-allowed;
+      pointer-events: none;       /* prevents clicks */
+      box-shadow: none;
+      transform: none !important;
+      opacity: 0.8;
+    }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Caytoo Automations</h1>
+
+  <div class="grid-container">
+    <!-- Deals Box -->
+    <div class="button-box">
+      <div class="box-title">Deals</div>
+      <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/deal" class="custom-button" target="_blank">Add a deal v2</a>
+      <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/edit-deal" class="custom-button" target="_blank">Edit a deal</a>
+      <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/merge-deal" class="custom-button" target="_blank">Merge deals</a>
+      <a href="https://scarlett-sykes.github.io/caytoo/" class="custom-button" target="_blank">Add a deal (old)</a>
+    </div>
+
+    <!-- Signals Box -->
+    <div class="button-box">
+      <div class="box-title">Signals</div>
+      <a href="https://scarlett-sykes.github.io/caytoo/signals.html" class="custom-button" target="_blank">Add a signal</a>
+      <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/edit-signal" class="custom-button" target="_blank">Edit a signal</a>
+      <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/merge-signal" class="custom-button" target="_blank">Merge signals</a>
+    </div>
+
+    <!-- Rightsholders Box -->
+    <div class="button-box">
+      <div class="box-title">Rightsholders</div>
+      <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/add-rh" class="custom-button" target="_blank">Add a Rightsholder via URL</a>
+      <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/add-rh-manual" class="custom-button" target="_blank">Add a Rightsholder Manually</a>
+      <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/get-id" class="custom-button" target="_blank">Grab a Rightsholder ID</a>
+      <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/edit-rh" class="custom-button" target="_blank">Edit a Rightsholder</a>
+      <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/merge-rh" class="custom-button" target="_blank">Merge Rightsholders</a>
+    </div>
+
+    <!-- Other Box -->
+    <div class="button-box">
+      <div class="box-title">Other</div>
+      <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/add-contact" class="custom-button" target="_blank">Add a contact</a>
+      <a href="https://caytoo.sharepoint.com/:l:/s/DatabaseProject/FJFqAv_Z-j9Ip9K9TgruZ7oBlfOjMaHo-wyd5gkPGqlIMw?nav=ZjQ0MzdlMjQtOWY1OC00N2JiLWE1YmYtNzIyNzJlMmFlZDRm" class="custom-button" target="_blank">Request shortlist</a>
+      <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/2FA" class="custom-button" target="_blank">Toggle 2FA</a>
+    </div>
+  </div>
+
+</body>
+</html>
