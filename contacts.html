@@ -12,12 +12,13 @@
   button { padding: 6px 12px; border-radius: 5px; border: none; cursor: pointer; }
   button.search { background: #FF5156; color: #fff; }
   button.search:hover { opacity: 0.9; }
-  button.action { background: #FF5156; color: #fff; margin-right: 5px; }
-  button.save { background: #FF5156; color: #fff; margin-right: 5px; }
+  button.action { background: #4a90e2; color: #fff; margin-right: 5px; }
+  button.save { background: #28a745; color: #fff; margin-right: 5px; }
   button.cancel { background: #aaa; color: #fff; }
   table { width: 95%; margin: 0 auto; border-collapse: collapse; background: #fff; }
   th, td { padding: 8px; border: 1px solid #ccc; text-align: left; }
-  th { background: #f1f1f1; cursor: pointer; }
+  th { background: #f1f1f1; cursor: pointer; user-select: none; }
+  th span { margin-left: 5px; font-size: 0.8em; }
   input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
 </style>
 </head>
@@ -34,14 +35,14 @@
   <thead>
     <tr>
       <th style="display:none" data-key="intBrandPersonId">ID</th>
-      <th data-key="strBrandName">Brand</th>
-      <th data-key="strPersonFirstName">First Name</th>
-      <th data-key="strPersonSurName">Last Name</th>
-      <th data-key="strPersonRoleApollo">Role</th>
-      <th data-key="strPersonEmail">Email</th>
-      <th data-key="strApolloCity">Location</th>
-      <th data-key="strPersonLinkedIn">LinkedIn</th>
-      <th data-key="bitIsKeyContact">Key Contact</th>
+      <th data-key="strBrandName">Brand <span></span></th>
+      <th data-key="strPersonFirstName">First Name <span></span></th>
+      <th data-key="strPersonSurName">Last Name <span></span></th>
+      <th data-key="strPersonRoleApollo">Role <span></span></th>
+      <th data-key="strPersonEmail">Email <span></span></th>
+      <th data-key="strApolloCity">Location <span></span></th>
+      <th data-key="strPersonLinkedIn">LinkedIn <span></span></th>
+      <th data-key="bitIsKeyContact">Key Contact <span></span></th>
       <th>Actions</th>
     </tr>
   </thead>
@@ -73,6 +74,7 @@ async function searchContacts() {
 }
 
 function populateTable(data) {
+  console.log(data); // check correct brand key
   const tbody = document.querySelector("#resultsTable tbody");
   tbody.innerHTML = "";
 
@@ -88,7 +90,7 @@ function populateTable(data) {
 
     tr.innerHTML = `
       <td style="display:none">${item.intBrandPersonId || ""}</td>
-      <td>${item.strBrandName || ""}</td>
+      <td>${item.strBrandName || item.strBrandName || ""}</td>
       <td>${item.strPersonFirstName || ""}</td>
       <td>${item.strPersonSurName || ""}</td>
       <td>${item.strPersonRoleApollo || ""}</td>
@@ -114,7 +116,7 @@ function enableEdit(btn) {
 
   tr.innerHTML = `
     <td style="display:none">${data.intBrandPersonId}</td>
-    <td><input type="text" value="${data.strBrandName || ""}" id="editBrand"></td>
+    <td><input type="text" value="${data.strBrandName || data.strBrandName || ""}" id="editBrand"></td>
     <td><input type="text" value="${data.strPersonFirstName || ""}" id="editFirstName"></td>
     <td><input type="text" value="${data.strPersonSurName || ""}" id="editSurName"></td>
     <td><input type="text" value="${data.strPersonRoleApollo || ""}" id="editRole"></td>
@@ -179,7 +181,7 @@ async function toggleKeyContact(id, isChecked) {
   }
 }
 
-// Sorting
+// Sorting with ▲▼ icons
 let currentSort = { key: null, asc: true };
 
 document.querySelectorAll("#resultsTable thead th").forEach((th, index) => {
@@ -188,6 +190,11 @@ document.querySelectorAll("#resultsTable thead th").forEach((th, index) => {
     if (!key) return;
     currentSort.asc = currentSort.key === key ? !currentSort.asc : true;
     currentSort.key = key;
+
+    // Update icons
+    document.querySelectorAll("#resultsTable thead th span").forEach(span => span.textContent = "");
+    th.querySelector("span").textContent = currentSort.asc ? "▲" : "▼";
+
     sortTable(index, currentSort.asc);
   });
 });
@@ -197,8 +204,18 @@ function sortTable(colIndex, asc = true) {
   const rows = Array.from(tbody.querySelectorAll("tr"));
 
   rows.sort((a, b) => {
-    const aText = a.children[colIndex].innerText.trim();
-    const bText = b.children[colIndex].innerText.trim();
+    const aCell = a.children[colIndex];
+    const bCell = b.children[colIndex];
+
+    // Key Contact checkbox handling
+    if (aCell.querySelector("input[type='checkbox']")) {
+      const aVal = aCell.querySelector("input[type='checkbox']").checked ? 1 : 0;
+      const bVal = bCell.querySelector("input[type='checkbox']").checked ? 1 : 0;
+      return asc ? aVal - bVal : bVal - aVal;
+    }
+
+    const aText = aCell.innerText.trim();
+    const bText = bCell.innerText.trim();
 
     const aNum = parseFloat(aText);
     const bNum = parseFloat(bText);
