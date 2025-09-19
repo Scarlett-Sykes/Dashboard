@@ -27,16 +27,15 @@
 <h2>Search Contacts by Brand ID</h2>
 
 <div id="topControls" style="display:flex; justify-content:center; align-items:center; gap:20px; margin-bottom:20px;">
-  <div id="searchContainer" style="display:flex; gap:10px;">
-    <input type="text" id="brandInput" placeholder="Brand ID">
-    <button class="search" onclick="searchContacts()">Search</button>
+  <div id="searchContainer" style="display:flex; gap:10px; align-items:center;">
+    <input type="text" id="brandInput" placeholder="Brand ID" style="height:36px; padding:0 10px; font-size:14px;">
+    <button class="search" onclick="searchContacts()" style="height:36px; padding:0 16px;">Search</button>
   </div>
-  <div>
-    <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/add-contact" target="_blank">
-      <button style="background:#FF5156; color:white; padding:6px 12px; border-radius:5px; cursor:pointer;">Add Contact</button>
-    </a>
-  </div>
+  <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/add-contact" target="_blank">
+    <button style="height:36px; padding:0 16px; background:#FF5156; color:white; border-radius:5px; border:none; cursor:pointer;">Add Contact</button>
+  </a>
 </div>
+
 
 
 <table id="resultsTable">
