@@ -12,8 +12,8 @@
   button { padding: 6px 12px; border-radius: 5px; border: none; cursor: pointer; }
   button.search { background: #FF5156; color: #fff; }
   button.search:hover { opacity: 0.9; }
-  button.action { background: #4a90e2; color: #fff; margin-right: 5px; }
-  button.save { background: #28a745; color: #fff; margin-right: 5px; }
+  button.action { background: #FF5156; color: #fff; margin-right: 5px; }
+  button.save { background: #FF5156; color: #fff; margin-right: 5px; }
   button.cancel { background: #aaa; color: #fff; }
   table { width: 95%; margin: 0 auto; border-collapse: collapse; background: #fff; }
   th, td { padding: 8px; border: 1px solid #ccc; text-align: left; }
@@ -88,7 +88,7 @@ function populateTable(data) {
 
     tr.innerHTML = `
       <td style="display:none">${item.intBrandPersonId || ""}</td>
-      <td>${item.strbrandname || ""}</td>
+      <td>${item.strBrandName || ""}</td>
       <td>${item.strPersonFirstName || ""}</td>
       <td>${item.strPersonSurName || ""}</td>
       <td>${item.strPersonRoleApollo || ""}</td>
@@ -114,7 +114,7 @@ function enableEdit(btn) {
 
   tr.innerHTML = `
     <td style="display:none">${data.intBrandPersonId}</td>
-    <td><input type="text" value="${data.strbrandname || ""}" id="editBrand"></td>
+    <td><input type="text" value="${data.strBrandName || ""}" id="editBrand"></td>
     <td><input type="text" value="${data.strPersonFirstName || ""}" id="editFirstName"></td>
     <td><input type="text" value="${data.strPersonSurName || ""}" id="editSurName"></td>
     <td><input type="text" value="${data.strPersonRoleApollo || ""}" id="editRole"></td>
@@ -139,7 +139,7 @@ async function saveEdit(btn, id) {
   const tr = btn.closest("tr");
   const payload = {
     intBrandPersonId: id,
-    strbrandname: tr.querySelector("#editBrand").value,
+    strBrandName: tr.querySelector("#editBrand").value,
     strPersonFirstName: tr.querySelector("#editFirstName").value,
     strPersonSurName: tr.querySelector("#editSurName").value,
     strPersonRoleApollo: tr.querySelector("#editRole").value,
