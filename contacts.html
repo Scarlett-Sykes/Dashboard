@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Contacts by Brand ID</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Montserrat', sans-serif; background: #f9f9f9; margin: 0; padding: 20px; color: #333; }
+  h2 { text-align: center; color: #444; }
+  #searchContainer { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+  input, textarea { padding: 6px; font-size: 14px; border-radius: 5px; border: 1px solid #ccc; }
+  button { padding: 6px 12px; border-radius: 5px; border: none; cursor: pointer; }
+  button.search { background: #FF5156; color: #fff; }
+  button.search:hover { opacity: 0.9; }
+  button.action { background: #4a90e2; color: #fff; margin-right: 5px; }
+  button.save { background: #28a745; color: #fff; margin-right: 5px; }
+  button.cancel { background: #aaa; color: #fff; }
+  table { width: 95%; margin: 0 auto; border-collapse: collapse; background: #fff; }
+  th, td { padding: 8px; border: 1px solid #ccc; text-align: left; }
+  th { background: #f1f1f1; }
+  input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
+</style>
+</head>
+<body>
+
+<h2>Search Contacts by Brand ID</h2>
+
+<div id="searchContainer">
+  <input type="text" id="brandInput" placeholder="Brand ID">
+  <button class="search" onclick="searchContacts()">Search</button>
+</div>
+
+<table id="resultsTable">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Brand</th>
+      <th>First Name</th>
+      <th>Surname</th>
+      <th>Email</th>
+      <th>Role</th>
+      <th>LinkedIn</th>
+      <th>Location (City, Country)</th>
+      <th>Key Contact</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+// Replace with your actual webhooks
+const webhook_FETCH  = "https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/webhook/fetch-contacts";
+const webhook_UPDATE = "https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/webhook/update-contact-status";
+const webhook_EDIT   = "https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/webhook/edit-contact";
+
+async function searchContacts() {
+  const brandid = document.getElementById("brandInput").value.trim();
+  if (!brandid) {
+    alert("Please enter a Brand ID");
+    return;
+  }
+
+  try {
+    const res = await fetch(webhook_FETCH, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ intbrandid: brandid })
+    });
+
+    const results = await res.json();
+    populateTable(results);
+
+  } catch (err) {
+    console.error("Error fetching data:", err);
+    alert("Failed to fetch results");
+  }
+}
+
+function populateTable(data) {
+  const tbody = document.querySelector("#resultsTable tbody");
+  tbody.innerHTML = "";
+
+  if (!data || data.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center">No contacts found</td></tr>`;
+    return;
+  }
+
+  data.forEach(item => {
+    const tr = document.createElement("tr");
+    tr.dataset.contact = JSON.stringify(item); // keep original data
+
+    tr.innerHTML = `
+      <td>${item.intBrandPersonId || ""}</td>
+      <td>${item.strbrandname || ""}</td>
+      <td>${item.strPersonFirstName || ""}</td>
+      <td>${item.strPersonSurName || ""}</td>
+      <td>${item.strPersonEmail || ""}</td>
+      <td>${item.strPersonRoleApollo || ""}</td>
+      <td>${item.strPersonLinkedIn ? `<a href="${item.strPersonLinkedIn}" target="_blank">Profile</a>` : ""}</td>
+      <td>${(item.strApolloCity || "") + (item.strApolloCountry ? ", " + item.strApolloCountry : "")}</td>
+      <td style="text-align:center">
+        <input type="checkbox" ${item.bitIsKeyContact ? "checked" : ""} 
+               onchange="toggleKeyContact('${item.intBrandPersonId}', this.checked)">
+      </td>
+      <td>
+        <button class="action" onclick='enableEdit(this)'>Edit</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function enableEdit(btn) {
+  const tr = btn.closest("tr");
+  const data = JSON.parse(tr.dataset.contact);
+
+  tr.innerHTML = `
+    <td>${data.intBrandPersonId}</td>
+    <td>${data.strbrandname}</td>
+    <td><input type="text" value="${data.strPersonFirstName || ""}" id="editFirstName"></td>
+    <td><input type="text" value="${data.strPersonSurName || ""}" id="editSurName"></td>
+    <td><input type="email" value="${data.strPersonEmail || ""}" id="editEmail"></td>
+    <td><input type="text" value="${data.strPersonRoleApollo || ""}" id="editRole"></td>
+    <td><input type="text" value="${data.strPersonLinkedIn || ""}" id="editLinkedIn"></td>
+    <td>
+      <input type="text" value="${data.strApolloCity || ""}" id="editCity" placeholder="City">
+      <input type="text" value="${data.strApolloCountry || ""}" id="editCountry" placeholder="Country">
+    </td>
+    <td style="text-align:center">
+      <input type="checkbox" ${data.bitIsKeyContact ? "checked" : ""} 
+             onchange="toggleKeyContact('${data.intBrandPersonId}', this.checked)">
+    </td>
+    <td>
+      <button class="save" onclick='saveEdit(this, ${data.intBrandPersonId})'>Save</button>
+      <button class="cancel" onclick='searchContacts()'>Cancel</button>
+    </td>
+  `;
+}
+
+async function saveEdit(btn, id) {
+  const tr = btn.closest("tr");
+
+  const payload = {
+    intBrandPersonId: id,
+    strPersonFirstName: tr.querySelector("#editFirstName").value,
+    strPersonSurName: tr.querySelector("#editSurName").value,
+    strPersonEmail: tr.querySelector("#editEmail").value,
+    strPersonRoleApollo: tr.querySelector("#editRole").value,
+    strPersonLinkedIn: tr.querySelector("#editLinkedIn").value,
+    strApolloCity: tr.querySelector("#editCity").value,
+    strApolloCountry: tr.querySelector("#editCountry").value
+  };
+
+  try {
+    const res = await fetch(webhook_EDIT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) throw new Error("Update failed");
+    alert("Contact updated successfully");
+    searchContacts(); // reload updated table
+
+  } catch (err) {
+    console.error("Error updating contact:", err);
+    alert("Error updating contact");
+  }
+}
+
+async function toggleKeyContact(id, isChecked) {
+  try {
+    const res = await fetch(webhook_UPDATE, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        contactId: id, 
+        bitIsKeyContact: isChecked ? 1 : 0 
+      })
+    });
+
+    if (!res.ok) {
+      alert("Failed to update contact status");
+    }
+  } catch (err) {
+    console.error("Update error:", err);
+    alert("Error updating contact status");
+  }
+}
+</script>
+
+</body>
+</html>
