@@ -29,11 +29,10 @@
     /* Grid container */
     .grid-container {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      grid-template-rows: repeat(2, auto);
+      grid-template-columns: repeat(3, 1fr); /* 3 columns */
       gap: 20px;
       width: 100%;
-      max-width: 1100px;
+      max-width: 1300px;
     }
 
     /* Individual boxes */
@@ -78,17 +77,16 @@
       transform: scale(1.03);
     }
   
-    /* New: inactive/disabled button styling */
+    /* Inactive/disabled button styling */
     .custom-button.inactive {
-      background: #e5e7eb;        /* grey background */
-      color: #6b7280;             /* grey text */
-      border: 1px solid #d1d5db;  /* subtle border */
+      background: #e5e7eb;
+      color: #6b7280;
+      border: 1px solid #d1d5db;
       cursor: not-allowed;
-      pointer-events: none;       /* prevents clicks */
+      pointer-events: none;
       box-shadow: none;
       transform: none !important;
       opacity: 0.8;
-    }
     }
   </style>
 </head>
@@ -103,15 +101,22 @@
       <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/deal" class="custom-button" target="_blank">Add a deal v2</a>
       <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/edit-deal" class="custom-button" target="_blank">Edit a deal</a>
       <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/merge-deal" class="custom-button" target="_blank">Merge deals</a>
-      <a href="https://scarlett-sykes.github.io/caytoo/" class="custom-button" target="_blank">Add a deal (old)</a>
     </div>
 
     <!-- Signals Box -->
     <div class="button-box">
       <div class="box-title">Signals</div>
       <a href="https://scarlett-sykes.github.io/Dashboard/signals.html" class="custom-button" target="_blank">Add a signal</a>
-      <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/edit-signal" class="custom-button" target="_blank">Edit a signal</a>
-      <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/merge-signal" class="custom-button" target="_blank">Merge signals</a>
+      <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/brand-id" class="custom-button" target="_blank">Edit a signal</a>
+      <a href="#" class="custom-button inactive">Merge signals</a>
+    </div>
+    
+    <!-- Brand Box -->
+    <div class="button-box">
+      <div class="box-title">Brands</div>
+      <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/edit-signal" class="custom-button" target="_blank">Grab Brand ID</a>
+      <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/edit-brand" class="custom-button" target="_blank">Edit a Brand</a>
+      <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/merge-signal" class="custom-button" target="_blank">Merge Brands</a>
     </div>
 
     <!-- Rightsholders Box -->
@@ -124,10 +129,16 @@
       <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/merge-rh" class="custom-button" target="_blank">Merge Rightsholders</a>
     </div>
 
+    <!-- Contacts Box -->
+    <div class="button-box">
+      <div class="box-title">Contacts</div>
+      <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/add-contact" class="custom-button" target="_blank">Add a contact</a>
+      <a href="#" class="custom-button inactive">Grab contacts</a>
+    </div>
+    
     <!-- Other Box -->
     <div class="button-box">
       <div class="box-title">Other</div>
-      <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/add-contact" class="custom-button" target="_blank">Add a contact</a>
       <a href="https://caytoo.sharepoint.com/:l:/s/DatabaseProject/FJFqAv_Z-j9Ip9K9TgruZ7oBlfOjMaHo-wyd5gkPGqlIMw?nav=ZjQ0MzdlMjQtOWY1OC00N2JiLWE1YmYtNzIyNzJlMmFlZDRm" class="custom-button" target="_blank">Request shortlist</a>
       <a href="https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/2FA" class="custom-button" target="_blank">Toggle 2FA</a>
     </div>
