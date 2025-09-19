@@ -17,7 +17,7 @@
   button.cancel { background: #aaa; color: #fff; }
   table { width: 95%; margin: 0 auto; border-collapse: collapse; background: #fff; }
   th, td { padding: 8px; border: 1px solid #ccc; text-align: left; }
-  th { background: #f1f1f1; }
+  th { background: #f1f1f1; cursor: pointer; }
   input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
 </style>
 </head>
@@ -33,15 +33,15 @@
 <table id="resultsTable">
   <thead>
     <tr>
-      <th>ID</th>
-      <th>Brand</th>
-      <th>First Name</th>
-      <th>Surname</th>
-      <th>Email</th>
-      <th>Role</th>
-      <th>LinkedIn</th>
-      <th>Location (City, Country)</th>
-      <th>Key Contact</th>
+      <th style="display:none" data-key="intBrandPersonId">ID</th>
+      <th data-key="strbrandname">Brand</th>
+      <th data-key="strPersonFirstName">First Name</th>
+      <th data-key="strPersonSurName">Last Name</th>
+      <th data-key="strPersonRoleApollo">Role</th>
+      <th data-key="strPersonEmail">Email</th>
+      <th data-key="strApolloCity">Location</th>
+      <th data-key="strPersonLinkedIn">LinkedIn</th>
+      <th data-key="bitIsKeyContact">Key Contact</th>
       <th>Actions</th>
     </tr>
   </thead>
@@ -56,10 +56,7 @@ const webhook_EDIT   = "https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azureco
 
 async function searchContacts() {
   const brandid = document.getElementById("brandInput").value.trim();
-  if (!brandid) {
-    alert("Please enter a Brand ID");
-    return;
-  }
+  if (!brandid) { alert("Please enter a Brand ID"); return; }
 
   try {
     const res = await fetch(webhook_FETCH, {
@@ -67,10 +64,8 @@ async function searchContacts() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ intbrandid: brandid })
     });
-
     const results = await res.json();
     populateTable(results);
-
   } catch (err) {
     console.error("Error fetching data:", err);
     alert("Failed to fetch results");
@@ -88,17 +83,18 @@ function populateTable(data) {
 
   data.forEach(item => {
     const tr = document.createElement("tr");
-    tr.dataset.contact = JSON.stringify(item); // keep original data
+    tr.dataset.contact = JSON.stringify(item);
+    tr.dataset.contactId = item.intBrandPersonId;
 
     tr.innerHTML = `
-      <td>${item.intBrandPersonId || ""}</td>
+      <td style="display:none">${item.intBrandPersonId || ""}</td>
       <td>${item.strbrandname || ""}</td>
       <td>${item.strPersonFirstName || ""}</td>
       <td>${item.strPersonSurName || ""}</td>
-      <td>${item.strPersonEmail || ""}</td>
       <td>${item.strPersonRoleApollo || ""}</td>
-      <td>${item.strPersonLinkedIn ? `<a href="${item.strPersonLinkedIn}" target="_blank">Profile</a>` : ""}</td>
+      <td>${item.strPersonEmail || ""}</td>
       <td>${(item.strApolloCity || "") + (item.strApolloCountry ? ", " + item.strApolloCountry : "")}</td>
+      <td>${item.strPersonLinkedIn ? `<a href="${item.strPersonLinkedIn}" target="_blank">Profile</a>` : ""}</td>
       <td style="text-align:center">
         <input type="checkbox" ${item.bitIsKeyContact ? "checked" : ""} 
                onchange="toggleKeyContact('${item.intBrandPersonId}', this.checked)">
@@ -111,22 +107,23 @@ function populateTable(data) {
   });
 }
 
+// Inline edit
 function enableEdit(btn) {
   const tr = btn.closest("tr");
   const data = JSON.parse(tr.dataset.contact);
 
   tr.innerHTML = `
-    <td>${data.intBrandPersonId}</td>
-    <td>${data.strbrandname}</td>
+    <td style="display:none">${data.intBrandPersonId}</td>
+    <td><input type="text" value="${data.strbrandname || ""}" id="editBrand"></td>
     <td><input type="text" value="${data.strPersonFirstName || ""}" id="editFirstName"></td>
     <td><input type="text" value="${data.strPersonSurName || ""}" id="editSurName"></td>
-    <td><input type="email" value="${data.strPersonEmail || ""}" id="editEmail"></td>
     <td><input type="text" value="${data.strPersonRoleApollo || ""}" id="editRole"></td>
-    <td><input type="text" value="${data.strPersonLinkedIn || ""}" id="editLinkedIn"></td>
+    <td><input type="email" value="${data.strPersonEmail || ""}" id="editEmail"></td>
     <td>
       <input type="text" value="${data.strApolloCity || ""}" id="editCity" placeholder="City">
       <input type="text" value="${data.strApolloCountry || ""}" id="editCountry" placeholder="Country">
     </td>
+    <td><input type="text" value="${data.strPersonLinkedIn || ""}" id="editLinkedIn"></td>
     <td style="text-align:center">
       <input type="checkbox" ${data.bitIsKeyContact ? "checked" : ""} 
              onchange="toggleKeyContact('${data.intBrandPersonId}', this.checked)">
@@ -140,13 +137,13 @@ function enableEdit(btn) {
 
 async function saveEdit(btn, id) {
   const tr = btn.closest("tr");
-
   const payload = {
     intBrandPersonId: id,
+    strbrandname: tr.querySelector("#editBrand").value,
     strPersonFirstName: tr.querySelector("#editFirstName").value,
     strPersonSurName: tr.querySelector("#editSurName").value,
-    strPersonEmail: tr.querySelector("#editEmail").value,
     strPersonRoleApollo: tr.querySelector("#editRole").value,
+    strPersonEmail: tr.querySelector("#editEmail").value,
     strPersonLinkedIn: tr.querySelector("#editLinkedIn").value,
     strApolloCity: tr.querySelector("#editCity").value,
     strApolloCountry: tr.querySelector("#editCountry").value
@@ -161,8 +158,7 @@ async function saveEdit(btn, id) {
 
     if (!res.ok) throw new Error("Update failed");
     alert("Contact updated successfully");
-    searchContacts(); // reload updated table
-
+    searchContacts(); // reload table
   } catch (err) {
     console.error("Error updating contact:", err);
     alert("Error updating contact");
@@ -174,19 +170,44 @@ async function toggleKeyContact(id, isChecked) {
     const res = await fetch(webhook_UPDATE, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        contactId: id, 
-        bitIsKeyContact: isChecked ? 1 : 0 
-      })
+      body: JSON.stringify({ contactId: id, bitIsKeyContact: isChecked ? 1 : 0 })
     });
-
-    if (!res.ok) {
-      alert("Failed to update contact status");
-    }
+    if (!res.ok) alert("Failed to update contact status");
   } catch (err) {
     console.error("Update error:", err);
     alert("Error updating contact status");
   }
+}
+
+// Sorting
+let currentSort = { key: null, asc: true };
+
+document.querySelectorAll("#resultsTable thead th").forEach((th, index) => {
+  th.addEventListener("click", () => {
+    const key = th.getAttribute("data-key");
+    if (!key) return;
+    currentSort.asc = currentSort.key === key ? !currentSort.asc : true;
+    currentSort.key = key;
+    sortTable(index, currentSort.asc);
+  });
+});
+
+function sortTable(colIndex, asc = true) {
+  const tbody = document.querySelector("#resultsTable tbody");
+  const rows = Array.from(tbody.querySelectorAll("tr"));
+
+  rows.sort((a, b) => {
+    const aText = a.children[colIndex].innerText.trim();
+    const bText = b.children[colIndex].innerText.trim();
+
+    const aNum = parseFloat(aText);
+    const bNum = parseFloat(bText);
+    if (!isNaN(aNum) && !isNaN(bNum)) return asc ? aNum - bNum : bNum - aNum;
+
+    return asc ? aText.localeCompare(bText) : bText.localeCompare(aText);
+  });
+
+  rows.forEach(row => tbody.appendChild(row));
 }
 </script>
 
