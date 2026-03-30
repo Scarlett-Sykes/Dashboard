@@ -588,11 +588,11 @@ const DEMO_MODE = true; // set false once n8n webhooks are live
 // USER DATA
 // ══════════════════════════════════════
 const USERS = [
-  {id:'u1',name:'Scarlett Sykes',          email:'scarlett@caytoo.co.uk',  code:'CAYT-SS01',role:'manager',isAdmin:true, color:'#FF5156',ini:'SS',managerId:null, jobTitle:'Head of Research'},
-  {id:'u2',name:'Oliver Roberts',          email:'oliver@caytoo.co.uk',    code:'CAYT-OR01',role:'manager',isAdmin:true, color:'#F0A030',ini:'OR',managerId:null, jobTitle:'Senior Analyst'},
-  {id:'u3',name:'Millie Hitchcock',        email:'millie@caytoo.co.uk',    code:'CAYT-MH01',role:'employee',isAdmin:false,color:'#47DDAE',ini:'MH',managerId:'u1',jobTitle:'Senior Researcher'},
-  {id:'u4',name:'Alexandra Asvestopoulou',email:'alexandra@caytoo.co.uk', code:'CAYT-AA01',role:'employee',isAdmin:false,color:'#63D7EA',ini:'AA',managerId:'u1',jobTitle:'Researcher'},
-  {id:'u5',name:'Jeremy Wheatcroft',       email:'jeremy@caytoo.co.uk',    code:'CAYT-JW01',role:'employee',isAdmin:false,color:'#9B6BD4',ini:'JW',managerId:'u2',jobTitle:'Analyst'},
+  {id:'u1',name:'Scarlett Sykes',          email:'scarlett@caytoo.co.uk',  code:'CAYT-SS01',role:'manager',isAdmin:true, color:'#FF5156',ini:'SS',managerId:u5, jobTitle:'Head of Operations'},
+  {id:'u2',name:'Olly Roberts',          email:'olly@caytoo.co.uk',    code:'CAYT-OR01',role:'manager',isAdmin:true, color:'#F0A030',ini:'OR',managerId:u5, jobTitle:'Head of Customer Success'},
+  {id:'u3',name:'Millie Hitchcock',        email:'millie@caytoo.co.uk',    code:'CAYT-MH01',role:'employee',isAdmin:false,color:'#47DDAE',ini:'MH',managerId:'u2',jobTitle:'Customer Success Manager & Social Media Lead'},
+  {id:'u4',name:'Alexandra Asvestopoulou',email:'alexandra@caytoo.co.uk', code:'CAYT-AA01',role:'employee',isAdmin:false,color:'#63D7EA',ini:'AA',managerId:'u1',jobTitle:'Researcher & Data Analyst'},
+  {id:'u5',name:'Jeremy Thompson',       email:'jeremy@caytoo.co.uk',    code:'CAYT-JW01',role:'manager',isAdmin:true,color:'#9B6BD4',ini:'JW',managerId:null,jobTitle:'CEO'},
 ];
 
 const PREV_ACTIONS = {
