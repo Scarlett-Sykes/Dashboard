@@ -313,7 +313,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div style="font-size:11px;color:rgba(255,255,255,.3);margin-bottom:32px">Structured. Fair. Fast.</div>
       <div class="feat"><div class="feat-ic">🔐</div><div><h4>Access codes</h4><p>Each employee has a unique code — they only see what's relevant to them</p></div></div>
       <div class="feat"><div class="feat-ic">🔄</div><div><h4>Carry-over objectives</h4><p>Last year's targets become this year's automatically</p></div></div>
-      <div class="feat"><div class="feat-ic">✨</div><div><h4>AI-generated summaries</h4><p>Claude drafts the manager assessment from self-assessments and peer feedback</p></div></div>
+      <div class="feat"><div class="feat-ic">✨</div><div><h4>Integrated peer reviews</h4><p>Peer feedback is put directly into the review format</p></div></div>
       <div class="feat"><div class="feat-ic">👥</div><div><h4>Admin user management</h4><p>Add/remove employees, reassign managers, manage access</p></div></div>
     </div>
     <div style="font-size:10px;color:rgba(255,255,255,.18)">© caytoo 2025</div>
@@ -439,9 +439,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <div class="how-box" style="margin-bottom:24px">
           <h3>How it works</h3>
           <div class="steps">
-            <div class="step"><div class="step-n">1</div><div class="step-t"><strong>Reviewee fills in objectives and self-assessment</strong><span>~20–30 mins. Rate yourself and add context.</span></div></div>
+            <div class="step"><div class="step-n">1</div><div class="step-t"><strong>Reviewee fills in objectives + self-assessment</strong><span>~20–30 mins. Rate yourself and add context.</span></div></div>
             <div class="step"><div class="step-n">2</div><div class="step-t"><strong>2 peers provide short written feedback</strong><span>~10 mins each.</span></div></div>
-            <div class="step"><div class="step-n">3</div><div class="step-t"><strong>Manager writes their assessment of the reviewee's year</strong><span>~10-15 mins</span></div></div>
+            <div class="step"><div class="step-n">3</div><div class="step-t"><strong>Manager writes their assessment of the reviewee's year</strong><span>~10-15 mins.</span></div></div>
             <div class="step"><div class="step-n">4</div><div class="step-t"><strong>Meet, align, set targets for next year</strong><span>One-page summary to keep on file.</span></div></div>
           </div>
         </div>
@@ -486,7 +486,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <div class="who-b who-emp">✏️ Reviewee completes this</div>
         <div class="sec-h">Self-Assessment</div>
         <div class="sec-d">A few focused questions. 2–4 sentences each is ideal.</div>
-        <div class="fg"><label>Biggest achievement this year</label><div class="fh">What are you most proud of? What had the most impact?</div><textarea id="achievement" rows="3" placeholder="e.g. Led end-to-end delivery of the UEFA report, receiving strong client feedback..."></textarea></div>
+        <div class="fg"><label>Biggest achievement this year</label><div class="fh">What are you most proud of? What had the most impact?</div><textarea id="achievement" rows="3" placeholder="e.g. Led end-to-end delivery of a deals analysis report, receiving strong client feedback..."></textarea></div>
         <div class="fg"><label>Where you found it hardest</label><div class="fh">Be honest — this shows self-awareness.</div><textarea id="hardest" rows="3" placeholder="e.g. Managing my workload during high-volume periods..."></textarea></div>
         <div class="fg"><label>What you'd like more of next year</label><div class="fh">Types of work, clients, responsibilities, projects.</div><textarea id="wantMore" rows="3" placeholder="e.g. More involvement in insights/market reports..."></textarea></div>
         <div class="fg"><label>Anything to raise with your manager</label><div class="fh">Team dynamics, processes, development, anything else.</div><textarea id="raise" rows="3" placeholder="e.g. Would appreciate clearer priorities when deadlines clash..."></textarea></div>
@@ -531,7 +531,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <!-- AI PANEL -->
         <div class="ai-panel">
           <h3>✨ AI Draft Assistant</h3>
-          <p>Claude will read the self-assessment and peer feedback and draft your overall assessment, suggest a rating, and pre-fill objectives and actions for next year.</p>
+          <p>Gemini will read the self-assessment and peer feedback and draft your overall assessment, suggest a rating, and pre-fill objectives and actions for next year.</p>
           <button class="btn" style="background:var(--brand);color:white;font-size:13px" onclick="generateAISummary()" id="aiBtn">Generate draft →</button>
           <div id="aiStatus" class="ai-status"></div>
           <div id="aiResult" style="display:none" class="ai-result">
@@ -557,9 +557,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
             <div class="rat-card" data-r="5" onclick="setRating(5)"><span class="rn">5</span><span class="rd">Needs focus</span></div>
           </div>
         </div>
-        <div class="fg"><label>Overall assessment</label><div class="fh">Summary of their performance, conduct and contribution this year.</div><textarea id="managerComments" rows="5" placeholder="e.g. Millie has had another strong year..."></textarea></div>
+        <div class="fg"><label>Overall assessment</label><div class="fh">Summary of their performance, conduct and contribution this year.</div><textarea id="managerComments" rows="5" placeholder="e.g. Reviewee has had another strong year..."></textarea></div>
         <div class="fg"><label>Key strengths to build on</label><textarea id="strengths" rows="3" placeholder="e.g. Report writing quality, initiative..."></textarea></div>
-        <div class="fg"><label>Main areas to develop</label><textarea id="develop" rows="3" placeholder="e.g. Proactive communication on workload..."></textarea></div>
+        <div class="fg"><label>Main areas to develop</label><textarea id="develop" rows="3" placeholder="e.g. Proactive communication, more contribution to innovation forums..."></textarea></div>
         <div style="display:flex;gap:10px;margin-top:24px">
           <button class="btn btn-out" onclick="goTo('peers')">← Back</button>
           <button class="btn btn-dark" onclick="goTo('actions')">Next: Actions & Targets →</button>
@@ -568,7 +568,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
       <!-- ACTIONS -->
       <div class="view" id="view-actions">
-        <div class="who-b who-mgr">📋 Manager + Reviewee agree these</div>
+        <div class="who-b who-mgr">📋 Manager & Reviewee agree these</div>
         <div class="sec-h">Actions & Targets</div>
         <div class="sec-d">These become next year's objectives automatically.</div>
         <div class="act-list" id="actionsContainer"></div>
@@ -1676,12 +1676,12 @@ Respond ONLY with a valid JSON object, no markdown, no backticks:
 
   btn.disabled = true;
   btn.textContent = 'Generating…';
-  status.innerHTML = '<div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span>Claude is reading the review data…</span></div>';
+  status.innerHTML = '<div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span>Gemini is reading the review data…</span></div>';
   result.style.display = 'none';
 
   try {
     let data;
-    if (CFG.aiSummary === 'YOUR_N8N_AI_WEBHOOK') {
+    if (CFG.aiSummary === 'https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/webhook/caytoo-review-ai') {
       // No n8n webhook set — call Anthropic API directly
       const res = await fetch('https://api.anthropic.com/v1/messages', {
         method:'POST',
