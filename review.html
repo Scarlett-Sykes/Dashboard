@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>caytoo — Performance Reviews</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg:#F7F5F0; --surface:#fff; --border:#E8E3DA; --text:#1A1714; --muted:#7A7369;
@@ -14,7 +14,7 @@
   --s1:#47DDAE; --s2:#63D7EA; --s3:#F0A030; --s4:#FF7A50; --s5:#FF5156;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.6}
+body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.6}
 /* ── PAGE SYSTEM ── */
 .pg{display:none!important}
 .pg.on{display:block!important}
@@ -33,33 +33,33 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .login-sub{color:var(--muted);font-size:14px;margin-bottom:26px}
 .lf{margin-bottom:15px}
 .lf label{display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:600;color:var(--muted);margin-bottom:5px}
-.lf input,.lf select{width:100%;border:1.5px solid var(--border);border-radius:9px;padding:10px 13px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;background:var(--surface);color:var(--text);transition:border-color .15s}
+.lf input,.lf select{width:100%;border:1.5px solid var(--border);border-radius:9px;padding:10px 13px;font-size:14px;font-family:'Montserrat',sans-serif;outline:none;background:var(--surface);color:var(--text);transition:border-color .15s}
 .lf input:focus,.lf select:focus{border-color:var(--brand)}
 
 .rp{font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;letter-spacing:.4px}
 .rp-mgr{background:var(--brand-lt);color:var(--brand)}
 .rp-emp{background:var(--mint-lt);color:#1a8a68}
 .rp-adm{background:#EEE8FF;color:#6830C8}
-.dbtn{background:none;border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--muted);transition:all .15s}
+.dbtn{background:none;border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-size:12px;font-family:'Montserrat',sans-serif;cursor:pointer;color:var(--muted);transition:all .15s}
 .dbtn:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-lt)}
 /* ── SHARED HEADER ── */
 .hdr{background:var(--text);color:white;padding:0 28px;height:56px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100}
 .hdr img{height:22px}
 .hdr-nav{display:flex;gap:2px;flex:1;margin-left:12px}
-.hn{padding:6px 13px;border-radius:6px;font-size:12px;font-weight:500;background:none;border:none;color:rgba(255,255,255,.45);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
+.hn{padding:6px 13px;border-radius:6px;font-size:12px;font-weight:500;background:none;border:none;color:rgba(255,255,255,.45);cursor:pointer;transition:all .15s;font-family:'Montserrat',sans-serif}
 .hn:hover{color:white;background:rgba(255,255,255,.08)}
 .hn.on{color:white;background:rgba(255,255,255,.14)}
 .hdr-r{display:flex;align-items:center;gap:10px;margin-left:auto}
 .av{width:28px;height:28px;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:white}
-.sout{background:none;border:1px solid rgba(255,255,255,.2);border-radius:6px;color:rgba(255,255,255,.45);font-family:'DM Sans',sans-serif;font-size:11px;padding:4px 9px;cursor:pointer;transition:all .15s}
+.sout{background:none;border:1px solid rgba(255,255,255,.2);border-radius:6px;color:rgba(255,255,255,.45);font-family:'Montserrat',sans-serif;font-size:11px;padding:4px 9px;cursor:pointer;transition:all .15s}
 .sout:hover{color:white;border-color:rgba(255,255,255,.5)}
 /* ── BUTTONS ── */
-.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;border:none;transition:all .15s}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;font-family:'Montserrat',sans-serif;cursor:pointer;border:none;transition:all .15s}
 .btn-brand{background:var(--brand);color:white}.btn-brand:hover{background:var(--brand-dk)}
 .btn-dark{background:var(--text);color:white}.btn-dark:hover{background:#2a2820}
 .btn-out{background:none;border:1.5px solid var(--border);color:var(--text)}.btn-out:hover{border-color:var(--text)}
 .btn-mint{background:var(--mint);color:var(--text)}.btn-mint:hover{background:#36c89c}
-.btn-ghost{background:none;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;cursor:pointer;font-size:13px;padding:6px 10px}
+.btn-ghost{background:none;border:none;color:var(--muted);font-family:'Montserrat',sans-serif;cursor:pointer;font-size:13px;padding:6px 10px}
 .btn-ghost:hover{color:var(--text)}
 .btn-sm{padding:6px 13px;font-size:12px}
 .btn-full{width:100%;justify-content:center}
@@ -127,19 +127,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .pill[data-s="5"].sel{background:var(--s5);border-color:var(--s5);color:white}
 .obj-body{padding:12px 16px;display:flex;flex-direction:column;gap:10px}
 .obj-lbl{font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:3px}
-.obj-ta{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:8px 11px;font-size:13px;font-family:'DM Sans',sans-serif;resize:vertical;min-height:58px;outline:none;color:var(--text);background:var(--bg);line-height:1.5;transition:border-color .15s}
+.obj-ta{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:8px 11px;font-size:13px;font-family:'Montserrat',sans-serif;resize:vertical;min-height:58px;outline:none;color:var(--text);background:var(--bg);line-height:1.5;transition:border-color .15s}
 .obj-ta:focus{border-color:var(--brand);background:white}
 .carried-ctx{background:var(--brand-lt);border:1px solid #FFD0D2;border-radius:7px;padding:7px 11px;font-size:11px;color:#993336;line-height:1.5;margin-bottom:2px}
 .carried-ctx strong{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--brand);margin-bottom:2px}
-.add-btn{display:flex;align-items:center;justify-content:center;gap:7px;padding:11px;border:2px dashed var(--border);border-radius:11px;background:none;cursor:pointer;color:var(--muted);font-size:13px;font-family:'DM Sans',sans-serif;width:100%;transition:all .15s}
+.add-btn{display:flex;align-items:center;justify-content:center;gap:7px;padding:11px;border:2px dashed var(--border);border-radius:11px;background:none;cursor:pointer;color:var(--muted);font-size:13px;font-family:'Montserrat',sans-serif;width:100%;transition:all .15s}
 .add-btn:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-lt)}
 /* ── FIELDS ── */
 .fg{margin-bottom:20px}
 .fg label{display:block;font-weight:600;font-size:13px;margin-bottom:4px}
 .fg .fh{font-size:12px;color:var(--muted);margin-bottom:6px}
-.fg textarea{width:100%;border:1.5px solid var(--border);border-radius:9px;padding:12px 14px;font-size:13px;font-family:'DM Sans',sans-serif;resize:vertical;min-height:88px;outline:none;color:var(--text);background:var(--surface);line-height:1.6;transition:border-color .15s}
+.fg textarea{width:100%;border:1.5px solid var(--border);border-radius:9px;padding:12px 14px;font-size:13px;font-family:'Montserrat',sans-serif;resize:vertical;min-height:88px;outline:none;color:var(--text);background:var(--surface);line-height:1.6;transition:border-color .15s}
 .fg textarea:focus{border-color:var(--brand)}
-.fg input[type=text],.fg input[type=date],.fg select{width:100%;border:1.5px solid var(--border);border-radius:9px;padding:9px 13px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;background:var(--surface);color:var(--text);transition:border-color .15s}
+.fg input[type=text],.fg input[type=date],.fg select{width:100%;border:1.5px solid var(--border);border-radius:9px;padding:9px 13px;font-size:13px;font-family:'Montserrat',sans-serif;outline:none;background:var(--surface);color:var(--text);transition:border-color .15s}
 .fg input:focus,.fg select:focus{border-color:var(--brand)}
 .f2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 /* ── PEERS ── */
@@ -161,9 +161,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 /* ── ACTIONS ── */
 .act-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
 .act-row{display:grid;grid-template-columns:1fr 120px 100px auto;align-items:center;gap:8px;background:var(--surface);border:1.5px solid var(--border);border-radius:9px;padding:10px 12px}
-.act-inp{border:none;background:none;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;color:var(--text);width:100%}
+.act-inp{border:none;background:none;font-family:'Montserrat',sans-serif;font-size:13px;outline:none;color:var(--text);width:100%}
 .act-inp::placeholder{color:var(--muted)}
-.act-sel{border:1.5px solid var(--border);border-radius:6px;padding:4px 7px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--muted);outline:none;background:var(--bg)}
+.act-sel{border:1.5px solid var(--border);border-radius:6px;padding:4px 7px;font-family:'Montserrat',sans-serif;font-size:11px;color:var(--muted);outline:none;background:var(--bg)}
 .x-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;line-height:1;padding:2px 4px}
 .x-btn:hover{color:var(--brand)}
 /* ── AI PANEL ── */
@@ -181,9 +181,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .ai-sug-obj{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
 .ai-sug-row{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border-radius:7px;padding:8px 10px;font-size:13px}
 .ai-sug-row span{flex:1}
-.ai-use-btn{background:var(--brand);border:none;color:white;border-radius:5px;padding:3px 9px;font-size:11px;font-family:'DM Sans',sans-serif;cursor:pointer;flex-shrink:0}
+.ai-use-btn{background:var(--brand);border:none;color:white;border-radius:5px;padding:3px 9px;font-size:11px;font-family:'Montserrat',sans-serif;cursor:pointer;flex-shrink:0}
 .ai-use-btn:hover{background:var(--brand-dk)}
-.editable-ai{width:100%;border:1.5px solid rgba(255,255,255,.15);border-radius:8px;padding:10px 12px;font-size:13px;font-family:'DM Sans',sans-serif;resize:vertical;min-height:88px;outline:none;color:white;background:rgba(255,255,255,.06);line-height:1.6;transition:border-color .15s}
+.editable-ai{width:100%;border:1.5px solid rgba(255,255,255,.15);border-radius:8px;padding:10px 12px;font-size:13px;font-family:'Montserrat',sans-serif;resize:vertical;min-height:88px;outline:none;color:white;background:rgba(255,255,255,.06);line-height:1.6;transition:border-color .15s}
 .editable-ai:focus{border-color:var(--brand)}
 /* ── SUMMARY ── */
 .sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
@@ -220,7 +220,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .step-t span{font-size:12px;color:var(--muted)}
 /* ── ADMIN ── */
 .admin-tabs{display:flex;gap:2px;background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:3px;margin-bottom:22px;width:fit-content}
-.at{padding:7px 16px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .15s}
+.at{padding:7px 16px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--muted);font-family:'Montserrat',sans-serif;transition:all .15s}
 .at.on{background:var(--surface);color:var(--text);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.08)}
 .admin-panel{display:none}.admin-panel.on{display:block}
 .user-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;margin-bottom:8px}
@@ -1464,7 +1464,7 @@ function renderObjectives() {
       <div class="obj-hd">
         <div style="display:flex;align-items:center;gap:7px;flex:1">
           <input type="text" value="${obj.title.replace(/"/g,'&quot;')}" placeholder="Objective title…"
-            style="border:none;background:none;font-weight:600;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;flex:1;color:var(--text)"
+            style="border:none;background:none;font-weight:600;font-size:13px;font-family:'Montserrat',sans-serif;outline:none;flex:1;color:var(--text)"
             onchange="state.objectives[${i}].title=this.value">
           ${obj.carried ? '<span class="c-tag">🔄 from last year</span>' : ''}
         </div>
@@ -1522,16 +1522,16 @@ function renderPeers() {
       </div>
       <div style="margin-bottom:10px">
         <label style="display:block;font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:4px">Select colleague</label>
-        <select style="width:100%;border:1.5px solid var(--border);border-radius:7px;padding:8px 11px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--bg);outline:none"
+        <select style="width:100%;border:1.5px solid var(--border);border-radius:7px;padding:8px 11px;font-family:'Montserrat',sans-serif;font-size:13px;background:var(--bg);outline:none"
           onchange="setPeerUser(${i},this.value)">${opts}</select>
         ${emailBtn}
       </div>
       <div class="fr"><label style="display:block;font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:4px">Key strengths</label>
-        <textarea style="width:100%;border:1.5px solid var(--border);border-radius:7px;padding:8px 11px;font-family:'DM Sans',sans-serif;font-size:13px;resize:vertical;min-height:64px;outline:none;background:var(--bg)" placeholder="What do they do particularly well?" onchange="state.peers[${i}].strengths=this.value">${p.strengths}</textarea></div>
+        <textarea style="width:100%;border:1.5px solid var(--border);border-radius:7px;padding:8px 11px;font-family:'Montserrat',sans-serif;font-size:13px;resize:vertical;min-height:64px;outline:none;background:var(--bg)" placeholder="What do they do particularly well?" onchange="state.peers[${i}].strengths=this.value">${p.strengths}</textarea></div>
       <div class="fr"><label style="display:block;font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:4px">One area to develop</label>
-        <textarea style="width:100%;border:1.5px solid var(--border);border-radius:7px;padding:8px 11px;font-family:'DM Sans',sans-serif;font-size:13px;resize:vertical;min-height:58px;outline:none;background:var(--bg)" placeholder="Constructive, specific, kind…" onchange="state.peers[${i}].development=this.value">${p.development}</textarea></div>
+        <textarea style="width:100%;border:1.5px solid var(--border);border-radius:7px;padding:8px 11px;font-family:'Montserrat',sans-serif;font-size:13px;resize:vertical;min-height:58px;outline:none;background:var(--bg)" placeholder="Constructive, specific, kind…" onchange="state.peers[${i}].development=this.value">${p.development}</textarea></div>
       <div class="fr"><label style="display:block;font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:4px">What's it like working with them?</label>
-        <textarea style="width:100%;border:1.5px solid var(--border);border-radius:7px;padding:8px 11px;font-family:'DM Sans',sans-serif;font-size:13px;resize:vertical;min-height:58px;outline:none;background:var(--bg)" placeholder="Team dynamics, collaboration, attitude…" onchange="state.peers[${i}].collab=this.value">${p.collab}</textarea></div>`;
+        <textarea style="width:100%;border:1.5px solid var(--border);border-radius:7px;padding:8px 11px;font-family:'Montserrat',sans-serif;font-size:13px;resize:vertical;min-height:58px;outline:none;background:var(--bg)" placeholder="Team dynamics, collaboration, attitude…" onchange="state.peers[${i}].collab=this.value">${p.collab}</textarea></div>`;
     c.appendChild(d);
   });
 }
