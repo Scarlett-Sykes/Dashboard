@@ -441,7 +441,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
           <div class="steps">
             <div class="step"><div class="step-n">1</div><div class="step-t"><strong>Reviewee fills in objectives + self-assessment</strong><span>~20–30 mins. Rate yourself and add context.</span></div></div>
             <div class="step"><div class="step-n">2</div><div class="step-t"><strong>2 peers provide short written feedback</strong><span>~10 mins each.</span></div></div>
-            <div class="step"><div class="step-n">3</div><div class="step-t"><strong>Manager writes their assessment of the reviewee's year</strong><span>~10-15 mins.</span></div></div>
+            <div class="step"><div class="step-n">3</div><div class="step-t"><strong>AI drafts the manager assessment</strong><span>~10-15 mins.</span></div></div>
             <div class="step"><div class="step-n">4</div><div class="step-t"><strong>Meet, align, set targets for next year</strong><span>One-page summary to keep on file.</span></div></div>
           </div>
         </div>
@@ -501,7 +501,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <div class="who-b who-emp">✏️ Reviewee completes this</div>
         <div class="sec-h">Goals & Growth</div>
         <div class="sec-d">Where do you want to go, and what will help you get there?</div>
-        <div class="fg"><label>Career aspirations (1–2 years)</label><div class="fh">What role or type of work do you see yourself doing?</div><textarea id="aspirations" rows="3" placeholder="e.g. Move into a senior researcher role with more QC responsibility..."></textarea></div>
+        <div class="fg"><label>Career aspirations (1–2 years)</label><div class="fh">What role or type of work do you see yourself doing?</div><textarea id="aspirations" rows="3" placeholder="e.g. Move into a more senior role with more responsibility..."></textarea></div>
         <div class="fg"><label>Skills to develop</label><div class="fh">Specific skills, knowledge areas, or experiences.</div><textarea id="skills" rows="3" placeholder="e.g. Infographic design, account management, social media strategy..."></textarea></div>
         <div class="fg"><label>Training / support needed</label><div class="fh">Courses, shadowing, mentoring, external events.</div><textarea id="training" rows="3" placeholder="e.g. Shadowing on caytoo labs work, ESA webinars quarterly..."></textarea></div>
         <div style="display:flex;gap:10px;margin-top:24px">
@@ -559,7 +559,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         </div>
         <div class="fg"><label>Overall assessment</label><div class="fh">Summary of their performance, conduct and contribution this year.</div><textarea id="managerComments" rows="5" placeholder="e.g. Reviewee has had another strong year..."></textarea></div>
         <div class="fg"><label>Key strengths to build on</label><textarea id="strengths" rows="3" placeholder="e.g. Report writing quality, initiative..."></textarea></div>
-        <div class="fg"><label>Main areas to develop</label><textarea id="develop" rows="3" placeholder="e.g. Proactive communication, more contribution to innovation forums..."></textarea></div>
+        <div class="fg"><label>Main areas to develop</label><textarea id="develop" rows="3" placeholder="e.g. Proactive communication on workload..."></textarea></div>
         <div style="display:flex;gap:10px;margin-top:24px">
           <button class="btn btn-out" onclick="goTo('peers')">← Back</button>
           <button class="btn btn-dark" onclick="goTo('actions')">Next: Actions & Targets →</button>
@@ -568,7 +568,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
       <!-- ACTIONS -->
       <div class="view" id="view-actions">
-        <div class="who-b who-mgr">📋 Manager & Reviewee agree these</div>
+        <div class="who-b who-mgr">📋 Manager + Reviewee agree these</div>
         <div class="sec-h">Actions & Targets</div>
         <div class="sec-d">These become next year's objectives automatically.</div>
         <div class="act-list" id="actionsContainer"></div>
@@ -1676,12 +1676,12 @@ Respond ONLY with a valid JSON object, no markdown, no backticks:
 
   btn.disabled = true;
   btn.textContent = 'Generating…';
-  status.innerHTML = '<div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span>Gemini is reading the review data…</span></div>';
+  status.innerHTML = '<div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span>Generating draft…</span></div>';
   result.style.display = 'none';
 
   try {
     let data;
-    if (CFG.aiSummary === 'https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/webhook/caytoo-review-ai') {
+    if (CFG.aiSummary === 'YOUR_N8N_AI_WEBHOOK') {
       // No n8n webhook set — call Anthropic API directly
       const res = await fetch('https://api.anthropic.com/v1/messages', {
         method:'POST',
@@ -1704,7 +1704,14 @@ Respond ONLY with a valid JSON object, no markdown, no backticks:
         body: JSON.stringify({ prompt })
       });
       const raw = await res.json();
-      data = JSON.parse(raw.result);
+      // Handle multiple response formats (Claude: raw.result, Gemini: raw.text / raw.output / raw.response / raw itself)
+      let jsonStr = raw.result || raw.text || raw.output || raw.response || raw.answer || raw.content;
+      // If still nothing, try the raw object itself as a string
+      if (!jsonStr && typeof raw === 'object') jsonStr = JSON.stringify(raw);
+      // Strip markdown code fences if present
+      if (typeof jsonStr === 'string') jsonStr = jsonStr.replace(/```json|```/g,'').trim();
+      // If jsonStr is already an object (Gemini sometimes returns parsed JSON), use it directly
+      data = (typeof jsonStr === 'object') ? jsonStr : JSON.parse(jsonStr);
     }
 
     aiSuggestions = data;
