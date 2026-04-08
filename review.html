@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -113,7 +114,7 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
 .obj-card{background:var(--surface);border:1px solid var(--border);border-radius:11px;overflow:hidden;transition:box-shadow .15s}
 .obj-card:hover{box-shadow:0 2px 10px rgba(0,0,0,.06)}
 .obj-card.carried{border-color:#FFD0D2}
-.obj-hd{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;padding:12px 16px;background:var(--bg);border-bottom:1px solid var(--border)}
+.obj-hd{display:grid;grid-template-columns:1fr auto;align-items:start;gap:12px;padding:14px 16px;background:var(--bg);border-bottom:1px solid var(--border);min-height:52px}
 .obj-card.carried .obj-hd{background:#FFF8F8}
 .obj-ti{font-weight:600;font-size:13px}
 .c-tag{font-size:10px;background:var(--brand-lt);color:var(--brand);padding:2px 6px;border-radius:4px;font-weight:600;margin-left:6px}
@@ -373,8 +374,10 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
     <div class="admin-tabs">
       <button class="at on" onclick="switchAdminTab('users',this)">Users</button>
       <button class="at" onclick="switchAdminTab('codes',this)">Access codes</button>
+      <button class="at" onclick="switchAdminTab('reviews',this);loadReviewDates()">Review dates</button>
     </div>
     <div id="admin-users" class="admin-panel on"></div>
+    <div id="admin-reviews" class="admin-panel"></div>
     <div id="admin-codes" class="admin-panel"></div>
   </div>
 </div>
@@ -1054,13 +1057,19 @@ async function renderTeam() {
       const open = reviews.find(r => r.status !== 'complete');
       const statusEl = document.getElementById('tc-status-' + emp.id);
       if (!statusEl) return;
+      // Get next review date from most recent complete review
+      const latest = reviews.filter(r => r.status === 'complete')
+        .sort((a,b) => a.period < b.period ? 1 : -1)[0];
+      const nrd = latest?.reviewData?.nextReviewDate || null;
+      const nrdStr = nrd ? '<div style="font-size:11px;color:var(--muted);margin-top:3px">Next due: ' + nrd + '</div>' : '';
+
       if (open) {
         // Has an in-progress review — clicking should open it directly
         document.getElementById('tc-' + emp.id).onclick = () => openReview(emp.id, open.reviewData, open.period);
         statusEl.innerHTML = '<span class="badge b-teal">In progress</span>' +
-          '<div style="font-size:11px;color:var(--muted);margin-top:3px">' + (open.period||'')+'</div>';
+          '<div style="font-size:11px;color:var(--muted);margin-top:3px">' + (open.period||'') + '</div>' + nrdStr;
       } else {
-        statusEl.innerHTML = '<span class="badge b-grey">New</span>';
+        statusEl.innerHTML = '<span class="badge b-grey">New</span>' + nrdStr;
       }
     } catch(e) {
       const statusEl = document.getElementById('tc-status-' + emp.id);
@@ -1179,6 +1188,74 @@ function renderAdmin() {
   });
   chtml += '</tbody></table>';
   document.getElementById('admin-codes').innerHTML = chtml;
+}
+
+async function loadReviewDates() {
+  const panel = document.getElementById('admin-reviews');
+  panel.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:20px 0">Loading…</div>';
+
+  // Fetch reviews for all non-manager employees in parallel
+  const employees = USERS.filter(u => u.managerId); // include everyone with a manager (employees + managers who report to someone)
+  const rows = await Promise.all(employees.map(async emp => {
+    try {
+      const res = await fetch(CFG.loadReviews, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ userId: emp.id })
+      });
+      const data = await res.json();
+      const reviews = data.reviews || [];
+      const latest = reviews.filter(r => r.status === 'complete')
+        .sort((a,b) => a.period < b.period ? 1 : -1)[0];
+      const open = reviews.find(r => r.status !== 'complete');
+      const nrd = latest?.reviewData?.nextReviewDate || null;
+      const mgr = USERS.find(m => m.id === emp.managerId);
+
+      // Days until next review
+      let daysStr = '—';
+      let urgency = 'color:var(--muted)';
+      if (nrd) {
+        const days = Math.round((new Date(nrd) - new Date()) / (1000*60*60*24));
+        if (days < 0) { daysStr = 'Overdue'; urgency = 'color:var(--brand);font-weight:600'; }
+        else if (days <= 30) { daysStr = days + 'd'; urgency = 'color:#F0A030;font-weight:600'; }
+        else if (days <= 90) { daysStr = days + 'd'; urgency = 'color:var(--teal);font-weight:600'; }
+        else { daysStr = days + 'd'; }
+      }
+
+      return { emp, mgr, nrd, daysStr, urgency, open };
+    } catch(e) {
+      return { emp, mgr: null, nrd: null, daysStr: '—', urgency: 'color:var(--muted)', open: null };
+    }
+  }));
+
+  // Sort by next review date ascending (nulls last)
+  rows.sort((a,b) => {
+    if (!a.nrd && !b.nrd) return 0;
+    if (!a.nrd) return 1;
+    if (!b.nrd) return -1;
+    return a.nrd < b.nrd ? -1 : 1;
+  });
+
+  let html = `<table style="width:100%;border-collapse:collapse;font-size:13px">
+    <thead><tr style="font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)">
+      <th style="text-align:left;padding:8px 12px;border-bottom:1.5px solid var(--border)">Employee</th>
+      <th style="text-align:left;padding:8px 12px;border-bottom:1.5px solid var(--border)">Manager</th>
+      <th style="text-align:left;padding:8px 12px;border-bottom:1.5px solid var(--border)">Status</th>
+      <th style="text-align:left;padding:8px 12px;border-bottom:1.5px solid var(--border)">Next review due</th>
+      <th style="text-align:left;padding:8px 12px;border-bottom:1.5px solid var(--border)">In</th>
+    </tr></thead><tbody>`;
+
+  rows.forEach(({emp, mgr, nrd, daysStr, urgency, open}) => {
+    html += `<tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:10px 12px;font-weight:500">${emp.name}<div style="font-size:11px;color:var(--muted)">${emp.jobTitle||''}</div></td>
+      <td style="padding:10px 12px">${mgr?.name||'—'}</td>
+      <td style="padding:10px 12px">${open ? '<span class="badge b-teal">In progress</span>' : '<span class="badge b-grey">No open review</span>'}</td>
+      <td style="padding:10px 12px">${nrd||'—'}</td>
+      <td style="padding:10px 12px;${urgency}">${daysStr}</td>
+    </tr>`;
+  });
+
+  html += '</tbody></table>';
+  panel.innerHTML = html;
 }
 
 function switchAdminTab(tab, btn) {
@@ -1460,9 +1537,10 @@ function renderObjectives() {
     d.innerHTML = `
       <div class="obj-hd">
         <div style="display:flex;align-items:center;gap:7px;flex:1">
-          <input type="text" value="${obj.title.replace(/"/g,'&quot;')}" placeholder="Objective title…"
-            style="border:none;background:none;font-weight:600;font-size:13px;font-family:'Montserrat',sans-serif;outline:none;flex:1;color:var(--text)"
-            onchange="state.objectives[${i}].title=this.value">
+          <div contenteditable="${CU.role === 'manager' || CU.isAdmin ? 'true' : 'false'}"
+            style="border:none;background:none;font-weight:600;font-size:13px;font-family:'Montserrat',sans-serif;outline:none;width:100%;color:var(--text);white-space:pre-wrap;word-break:break-word;line-height:1.4;min-height:20px;cursor:${CU.role === 'manager' || CU.isAdmin ? 'text' : 'default'}"
+            oninput="state.objectives[${i}].title=this.innerText.trim()"
+            >${obj.title}</div>
           ${obj.carried ? '<span class="c-tag">🔄 from last year</span>' : ''}
         </div>
         <div class="pills">
@@ -1475,10 +1553,7 @@ function renderObjectives() {
           <div class="obj-lbl">Self-assessment note</div>
           <textarea class="obj-ta" placeholder="${obj.carried?'How did you get on with this target?':'How did you perform against this objective?'}" oninput="state.objectives[${i}].selfNote=this.value">${obj.selfNote}</textarea>
         </div>
-        <div>
-          <div class="obj-lbl">Manager's note <span style="font-weight:400;font-style:italic;color:var(--muted)">(after meeting)</span></div>
-          <textarea class="obj-ta" placeholder="Manager's view…" onchange="state.objectives[${i}].managerNote=this.value">${obj.managerNote}</textarea>
-        </div>
+
         <div style="text-align:right"><button onclick="removeObjective(${i})" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:12px">Remove</button></div>
       </div>`;
     c.appendChild(d);
