@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -328,6 +327,9 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
       </div>
       <button class="btn btn-brand btn-full" style="padding:12px;margin-top:4px" onclick="doLogin()">Sign in →</button>
       <div id="loginErr" style="color:var(--brand);font-size:12px;margin-top:8px;min-height:16px"></div>
+      <div style="text-align:center;margin-top:12px">
+        <button class="sout" style="font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline" onclick="showForgotCodeModal()">Forgot your code?</button>
+      </div>
 
     </div>
   </div>
@@ -441,7 +443,7 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
           <div class="steps">
             <div class="step"><div class="step-n">1</div><div class="step-t"><strong>Reviewee fills in objectives + self-assessment</strong><span>~20–30 mins. Rate yourself and add context.</span></div></div>
             <div class="step"><div class="step-n">2</div><div class="step-t"><strong>2 peers provide short written feedback</strong><span>~10 mins each.</span></div></div>
-            <div class="step"><div class="step-n">3</div><div class="step-t"><strong>Manager completes their assessment of the reviewee</strong><span>~10-15 mins.</span></div></div>
+            <div class="step"><div class="step-n">3</div><div class="step-t"><strong>Manager writes their assessment of the reviewee's year</strong><span>~10-15 mins.</span></div></div>
             <div class="step"><div class="step-n">4</div><div class="step-t"><strong>Meet, align, set targets for next year</strong><span>One-page summary to keep on file.</span></div></div>
           </div>
         </div>
@@ -653,6 +655,7 @@ const CFG = {
   saveReview:  N8N_BASE + '/caytoo-save-review',
   aiSummary:   N8N_BASE + '/caytoo-review-ai',
   peerFormBase: 'https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/form/caytoo-peer-feedback',
+  forgotCode:   N8N_BASE + '/forgotten-code',
 };
 
 
@@ -1907,6 +1910,7 @@ function restoreState(data) {
   }
 
   // Restore textarea values once DOM is ready
+  // Restore textarea values - use longer timeout to ensure it runs after goTo
   setTimeout(() => {
     const tfields = ['achievement','hardest','wantMore','raise','aspirations','skills','training',
       'managerComments','strengths','develop'];
@@ -1916,16 +1920,19 @@ function restoreState(data) {
     });
     const nd = document.getElementById('nextReviewDate');
     if (nd && state.nextReviewDate) nd.value = state.nextReviewDate;
-  }, 100);
+  }, 200);
 }
 
 function saveCurrentView() {
   ['achievement','hardest','wantMore','raise','aspirations','skills','training','managerComments','strengths','develop'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) state[id] = el.value;
+    // Only save if the element's parent view is currently visible, to avoid
+    // hidden empty textareas clobbering restored state
+    if (el && el.closest('.view')?.classList.contains('on')) state[id] = el.value;
+    else if (el && el.value) state[id] = el.value; // save if non-empty regardless
   });
   const nd = document.getElementById('nextReviewDate');
-  if (nd) state.nextReviewDate = nd.value;
+  if (nd && (nd.closest('.view')?.classList.contains('on') || nd.value)) state.nextReviewDate = nd.value;
   // Save action inputs
   state.actions.forEach((a,i) => {
     const row = document.querySelector('.act-row:nth-child(' + (i+1) + ')');
@@ -2047,6 +2054,36 @@ function applyRoleVisibility() {
   // Reviewee-mode CSS class for objectives page
   const revWrap = document.getElementById('pg-review');
   if (revWrap) revWrap.classList.toggle('reviewee-mode', hideFromReviewee);
+}
+
+function showForgotCodeModal() {
+  document.getElementById('modalTitle').textContent = 'Forgot your code?';
+  document.getElementById('modalBody').innerHTML = `
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Enter your caytoo email address and we'll send your access code to your inbox.</p>
+    <div class="fg"><label>Email address</label><input type="email" id="forgotEmail" placeholder="firstname@caytoo.co.uk" style="width:100%"></div>
+    <div id="forgotMsg" style="font-size:12px;min-height:16px;margin-top:4px"></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
+      <button class="btn btn-out btn-sm" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-brand btn-sm" onclick="sendForgotCode()">Send code →</button>
+    </div>`;
+  showModal();
+}
+
+async function sendForgotCode() {
+  const email = document.getElementById('forgotEmail').value.trim().toLowerCase();
+  const msg = document.getElementById('forgotMsg');
+  if (!email) { msg.style.color = 'var(--brand)'; msg.textContent = 'Please enter your email address.'; return; }
+  msg.style.color = 'var(--muted)'; msg.textContent = 'Sending…';
+  try {
+    await fetch(CFG.forgotCode, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    msg.style.color = 'var(--teal)'; msg.textContent = '✓ If that email is registered, your code is on its way.';
+  } catch(e) {
+    msg.style.color = 'var(--brand)'; msg.textContent = 'Could not send — check your connection.';
+  }
 }
 
 function showModal(){ document.getElementById('modalOv').style.display='flex'; }
