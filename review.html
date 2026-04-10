@@ -160,8 +160,8 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
 .rat-card[data-r="5"].on{border-color:var(--s5);background:var(--brand-lt)}.rat-card[data-r="5"].on .rn{color:var(--brand)}
 /* ── ACTIONS ── */
 .act-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
-.act-row{display:grid;grid-template-columns:1fr 120px 100px auto;align-items:center;gap:8px;background:var(--surface);border:1.5px solid var(--border);border-radius:9px;padding:10px 12px}
-.act-inp{border:none;background:none;font-family:'Montserrat',sans-serif;font-size:13px;outline:none;color:var(--text);width:100%}
+.act-row{display:grid;grid-template-columns:1fr 120px 100px auto;align-items:start;gap:8px;background:var(--surface);border:1.5px solid var(--border);border-radius:9px;padding:10px 12px}
+.act-inp{border:none;background:none;font-family:'Montserrat',sans-serif;font-size:13px;outline:none;color:var(--text);width:100%;white-space:pre-wrap;word-break:break-word;resize:none}
 .act-inp::placeholder{color:var(--muted)}
 .act-sel{border:1.5px solid var(--border);border-radius:6px;padding:4px 7px;font-family:'Montserrat',sans-serif;font-size:11px;color:var(--muted);outline:none;background:var(--bg)}
 .x-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;line-height:1;padding:2px 4px}
@@ -443,7 +443,7 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
           <div class="steps">
             <div class="step"><div class="step-n">1</div><div class="step-t"><strong>Reviewee fills in objectives + self-assessment</strong><span>~20–30 mins. Rate yourself and add context.</span></div></div>
             <div class="step"><div class="step-n">2</div><div class="step-t"><strong>2 peers provide short written feedback</strong><span>~10 mins each.</span></div></div>
-            <div class="step"><div class="step-n">3</div><div class="step-t"><strong>Manager writes their assessment of the reviewee's year</strong><span>~10-15 mins.</span></div></div>
+            <div class="step"><div class="step-n">3</div><div class="step-t"><strong>AI drafts the manager assessment</strong><span>~10-15 mins.</span></div></div>
             <div class="step"><div class="step-n">4</div><div class="step-t"><strong>Meet, align, set targets for next year</strong><span>One-page summary to keep on file.</span></div></div>
           </div>
         </div>
@@ -1580,11 +1580,19 @@ function renderPeers() {
     const label = i===0 ? "Chosen by reviewee" : "Chosen by manager";
     const whoClass = i===0 ? "who-emp" : "who-mgr";
 
+    // Resolve userId from name FIRST (for historic reviews without userId)
+    if (!p.userId && p.name) {
+      const matched = USERS.find(u => u.name === p.name);
+      if (matched) { p.userId = matched.id; }
+    }
+
     // Build peer name options
+    const nameOnlyOption = (!p.userId && p.name && !eligible.find(u => u.name === p.name))
+      ? `<option value="" selected>${p.name} (external)</option>` : '';
     const opts = `<option value="">— Select colleague —</option>` +
+      nameOnlyOption +
       eligible.map(u => `<option value="${u.id}" ${p.userId===u.id?'selected':''}>${u.name}</option>`).join('');
 
-    // Email button — only show if a peer is selected
     const peerUser = p.userId ? USERS.find(u => u.id === p.userId) : null;
     const emailBtn = peerUser?.email ? `
       <button class="btn btn-sm btn-out" style="margin-top:8px" onclick="sendPeerRequest(${i})">
@@ -1664,17 +1672,20 @@ function setRating(r) {
 function renderActions() {
   const c = document.getElementById('actionsContainer'); c.innerHTML = '';
   state.actions.forEach((a,i) => {
-    const d = document.createElement('div'); d.className = 'act-row';
-    const dc = {high:'var(--brand)',med:'var(--teal)',low:'var(--mint)'}[a.priority];
+    const d = document.createElement('div');
+    d.className = 'act-row';
+    d.draggable = true;
+    d.dataset.idx = i;
+    const dc = {core:'var(--brand)',new:'var(--teal)',aspirational:'var(--mint)',high:'var(--brand)',med:'var(--teal)',low:'var(--mint)'}[a.priority] || 'var(--teal)';
     d.innerHTML = `
       <div style="display:flex;align-items:center;gap:7px;min-width:0">
+        <div style="cursor:grab;color:var(--muted);font-size:14px;flex-shrink:0;padding:0 2px;user-select:none" title="Drag to reorder">⠿</div>
         <div style="width:7px;height:7px;border-radius:50%;background:${dc};flex-shrink:0"></div>
-        <input class="act-inp" value="${(a.text||'').replace(/"/g,'&quot;')}" placeholder="Action or target…" onchange="state.actions[${i}].text=this.value">
+        <textarea class="act-inp" placeholder="Action or target…" oninput="state.actions[${i}].text=this.value" style="resize:none;height:auto;min-height:38px;overflow:hidden;padding:0;line-height:1.5" rows="2">${(a.text||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
       </div>
-      <select class="act-sel" onchange="state.actions[${i}].priority=this.value">
-        <option value="high" ${a.priority==='high'?'selected':''}>🔴 High</option>
-        <option value="med"  ${a.priority==='med' ?'selected':''}>🟡 Medium</option>
-        <option value="low"  ${a.priority==='low' ?'selected':''}>🟢 Low</option>
+      <select class="act-sel" onchange="state.actions[${i}].priority=this.value;renderActions()">
+        <option value="core" ${(a.priority==='core'||a.priority==='high')?'selected':''}>⭐ Core</option>
+        <option value="new"  ${(a.priority==='new'||a.priority==='med') ?'selected':''}>✨ New</option>
       </select>
       <select class="act-sel" onchange="state.actions[${i}].status=this.value">
         <option value="not-started" ${(a.status||'not-started')==='not-started'?'selected':''}>Not started</option>
@@ -1682,10 +1693,31 @@ function renderActions() {
         <option value="complete"    ${a.status==='complete'   ?'selected':''}>Complete ✓</option>
       </select>
       <button class="x-btn" onclick="removeAction(${i})">×</button>`;
+
+    // Drag events
+    d.addEventListener('dragstart', e => {
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', i);
+      setTimeout(() => d.style.opacity = '0.4', 0);
+    });
+    d.addEventListener('dragend', () => d.style.opacity = '');
+    d.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; d.style.borderColor = 'var(--brand)'; });
+    d.addEventListener('dragleave', () => d.style.borderColor = '');
+    d.addEventListener('drop', e => {
+      e.preventDefault();
+      d.style.borderColor = '';
+      const from = parseInt(e.dataTransfer.getData('text/plain'));
+      const to = parseInt(d.dataset.idx);
+      if (from === to) return;
+      const moved = state.actions.splice(from, 1)[0];
+      state.actions.splice(to, 0, moved);
+      renderActions();
+    });
+
     c.appendChild(d);
   });
 }
-function addAction(){ state.actions.push({text:'',priority:'med',status:'not-started'}); renderActions(); }
+function addAction(){ state.actions.push({text:'',priority:'new',status:'not-started'}); renderActions(); }
 function removeAction(i){ state.actions.splice(i,1); renderActions(); }
 
 // ══════════════════════════════════════
@@ -1728,6 +1760,8 @@ CAREER GOALS:
 PEER FEEDBACK:
 ${peerText || 'No peer feedback yet'}
 
+Focus the development targets on the employee's own growth — skills to build, responsibilities to take on, habits to develop — not tasks for their manager to arrange. Make them specific and actionable.
+
 Respond ONLY with a valid JSON object, no markdown, no backticks:
 {
   "overallAssessment": "3-4 sentences: warm, honest overall summary referencing specific achievements and peer feedback",
@@ -1735,17 +1769,11 @@ Respond ONLY with a valid JSON object, no markdown, no backticks:
   "development": "2-3 sentences on areas to develop, framed constructively",
   "suggestedRating": 2,
   "ratingReason": "One sentence explaining the suggested rating",
-  "suggestedObjectives": [
-    "Specific objective 1 based on their goals and development areas",
-    "Specific objective 2",
-    "Specific objective 3",
-    "Specific objective 4"
-  ],
-  "suggestedActions": [
-    {"text": "Specific action 1 based on review data", "priority": "high"},
-    {"text": "Specific action 2", "priority": "med"},
-    {"text": "Specific action 3", "priority": "med"},
-    {"text": "Specific action 4", "priority": "low"}
+  "developmentTargets": [
+    {"text": "Specific development target or objective for the employee, based on their goals, aspirations and areas to develop", "priority": "core"},
+    {"text": "Another specific target — could be a skill to build, a responsibility to take on, or a habit to develop", "priority": "core"},
+    {"text": "A new or stretch target", "priority": "new"},
+    {"text": "Another new or stretch target", "priority": "new"}
   ]
 }`;
 
@@ -1810,24 +1838,27 @@ Respond ONLY with a valid JSON object, no markdown, no backticks:
     document.getElementById('aiOverall').value = data.overallAssessment || '';
 
     // Suggested objectives
-    if (data.suggestedObjectives?.length) {
-      let ohtml = '<h4>Suggested next-year objectives (click + to add)</h4><div class="ai-sug-obj">';
-      data.suggestedObjectives.forEach(obj => {
-        ohtml += `<div class="ai-sug-row"><span>${obj}</span><button class="ai-use-btn" onclick="addSuggestedObjective('${obj.replace(/'/g,"\\'").replace(/"/g,'\\"')}')">+</button></div>`;
-      });
-      ohtml += '</div>';
-      document.getElementById('aiSugObjs').innerHTML = ohtml;
+    // Merged development targets — add as objectives and/or actions
+    const targets = data.developmentTargets || [];
+    // Backwards compat: fall back to old format if model returns it
+    if (!targets.length && (data.suggestedObjectives?.length || data.suggestedActions?.length)) {
+      (data.suggestedObjectives||[]).forEach(o => targets.push({text:o, priority:'high'}));
+      (data.suggestedActions||[]).forEach(a => targets.push(a));
     }
-
-    // Suggested actions
-    if (data.suggestedActions?.length) {
+    if (targets.length) {
       const pl = {high:'🔴 High',med:'🟡 Medium',low:'🟢 Low'};
-      let ahtml = '<h4>Suggested actions & targets (click + to add)</h4><div class="ai-sug-obj">';
-      data.suggestedActions.forEach(act => {
-        ahtml += `<div class="ai-sug-row"><span style="font-size:11px;background:rgba(255,255,255,.1);border-radius:4px;padding:1px 6px;margin-right:6px">${pl[act.priority]||'🟡'}</span><span>${act.text}</span><button class="ai-use-btn" onclick="addSuggestedAction('${act.text.replace(/'/g,"\\'").replace(/"/g,'\\"')}','${act.priority}')">+</button></div>`;
+      let thtml = '<h4>Suggested development targets for next year (click + to add)</h4><div class="ai-sug-obj">';
+      targets.forEach(t => {
+        const safe = (t.text||'').replace(/'/g,"\\'").replace(/"/g,'\\"');
+        thtml += `<div class="ai-sug-row">
+          <span style="font-size:11px;background:rgba(255,255,255,.1);border-radius:4px;padding:1px 6px;margin-right:6px">${pl[t.priority]||'🟡'}</span>
+          <span>${t.text}</span>
+          <button class="ai-use-btn" style="margin-left:auto;flex-shrink:0" onclick="addSuggestedAction('${safe}','${t.priority}')">+ Add</button>
+        </div>`;
       });
-      ahtml += '</div>';
-      document.getElementById('aiSugActs').innerHTML = ahtml;
+      thtml += '</div>';
+      document.getElementById('aiSugObjs').innerHTML = thtml;
+      document.getElementById('aiSugActs').innerHTML = '';
     }
 
   } catch(e) {
@@ -1861,7 +1892,8 @@ function addSuggestedObjective(title) {
 }
 
 function addSuggestedAction(text, priority) {
-  state.actions.push({text, priority, status:'not-started'});
+  const mappedPriority = (priority==='high'||priority==='core')?'core':'new';
+  state.actions.push({text, priority: mappedPriority, status:'not-started'});
   renderActions();
   toast('Action added');
 }
@@ -1933,18 +1965,14 @@ function saveCurrentView() {
   });
   const nd = document.getElementById('nextReviewDate');
   if (nd && (nd.closest('.view')?.classList.contains('on') || nd.value)) state.nextReviewDate = nd.value;
-  // Save action inputs
-  state.actions.forEach((a,i) => {
-    const row = document.querySelector('.act-row:nth-child(' + (i+1) + ')');
-    if (row) { const inp = row.querySelector('.act-inp'); if(inp) a.text = inp.value; }
-  });
+  // Actions are kept in sync via oninput handlers — no extra save needed
 }
 
 function sc(s){ return ['','var(--s1)','var(--s2)','var(--s3)','var(--s4)','var(--s5)'][s]||'#ccc'; }
 function stc(s){ return s<=2?'var(--text)':'white'; }
 function sl(s){ return ['','Exceptional','Strong','Solid','Developing','Needs focus'][s]||'—'; }
-function pc(p){ return p==='high'?'ph':p==='low'?'pl':'pm'; }
-function pl(p){ return p==='high'?'High':p==='low'?'Low':'Medium'; }
+function pc(p){ return p==='core'?'ph':p==='new'?'pm':'pm'; }
+function pl(p){ return p==='core'?'Core':p==='new'?'New':'Core'; }
 
 function buildSummary() {
   saveCurrentView();
