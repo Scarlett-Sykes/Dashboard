@@ -40,7 +40,6 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
 .rp-mgr{background:var(--brand-lt);color:var(--brand)}
 .rp-emp{background:var(--mint-lt);color:#1a8a68}
 .rp-adm{background:#EEE8FF;color:#6830C8}
-.dbtn{background:none;border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-size:12px;font-family:'Montserrat',sans-serif;cursor:pointer;color:var(--muted);transition:all .15s}
 .dbtn:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-lt)}
 /* ── SHARED HEADER ── */
 .hdr{background:var(--text);color:white;padding:0 28px;height:56px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100}
@@ -204,13 +203,6 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
 .w-hero{text-align:center;padding:48px 0 32px}
 .w-hero h1{font-family:'Montserrat',serif;font-size:40px;margin-bottom:10px;line-height:1.1}
 .w-hero p{color:var(--muted);max-width:480px;margin:0 auto 24px;font-size:14px;line-height:1.6}
-.role-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:500px;margin:0 auto}
-.role-card{background:var(--surface);border:2px solid var(--border);border-radius:13px;padding:22px 18px;cursor:pointer;text-align:left;transition:all .2s}
-.role-card:hover{border-color:var(--brand);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.07)}
-.role-card.sel{border-color:var(--brand);background:var(--brand-lt)}
-.role-ic{font-size:24px;margin-bottom:9px}
-.role-card h3{font-size:14px;font-weight:700;margin-bottom:4px}
-.role-card p{font-size:12px;color:var(--muted);line-height:1.4}
 .how-box{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:22px 28px;max-width:600px;margin:0 auto}
 .how-box h3{font-family:'Montserrat',serif;font-size:17px;margin-bottom:16px}
 .steps{display:flex;flex-direction:column;gap:11px}
@@ -255,8 +247,7 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
   .main{padding:24px 18px}
   .sum-grid{grid-template-columns:1fr}
   .rat-grid{grid-template-columns:repeat(3,1fr)}
-  .role-cards{grid-template-columns:1fr}
-  .hist-2col{grid-template-columns:1fr!important}
+    .hist-2col{grid-template-columns:1fr!important}
   .hist-pg{padding:22px 16px!important}
 }
 /* ── HISTORY PAGE ── */
@@ -443,16 +434,13 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
           <div class="steps">
             <div class="step"><div class="step-n">1</div><div class="step-t"><strong>Reviewee fills in objectives + self-assessment</strong><span>~20–30 mins. Rate yourself and add context.</span></div></div>
             <div class="step"><div class="step-n">2</div><div class="step-t"><strong>2 peers provide short written feedback</strong><span>~10 mins each.</span></div></div>
-            <div class="step"><div class="step-n">3</div><div class="step-t"><strong>Manager writes their assessment of the reviewee's year</strong><span>~10-15 mins.</span></div></div>
+            <div class="step"><div class="step-n">3</div><div class="step-t"><strong>AI drafts the manager assessment</strong><span>~10-15 mins.</span></div></div>
             <div class="step"><div class="step-n">4</div><div class="step-t"><strong>Meet, align, set targets for next year</strong><span>One-page summary to keep on file.</span></div></div>
           </div>
         </div>
         <div style="max-width:500px;margin:0 auto 20px">
           <p style="font-weight:600;margin-bottom:10px;text-align:center;font-size:13px">I am completing this as...</p>
-          <div class="role-cards">
-            <div class="role-card" id="roleReviewee" onclick="setRole('reviewee')"><div class="role-ic">🙋</div><h3>Reviewee</h3><p>Fill in your objectives and self-assessment</p></div>
-            <div class="role-card" id="roleManager" onclick="setRole('manager')"><div class="role-ic">📋</div><h3>Manager</h3><p>Review, score and set targets</p></div>
-          </div>
+
         </div>
         <div style="text-align:center;margin-top:20px">
           <button class="btn btn-brand" onclick="goTo('objectives')" style="padding:13px 30px;font-size:14px">Start Review →</button>
@@ -488,10 +476,10 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
         <div class="who-b who-emp">✏️ Reviewee completes this</div>
         <div class="sec-h">Self-Assessment</div>
         <div class="sec-d">A few focused questions. 2–4 sentences each is ideal.</div>
-        <div class="fg"><label>Biggest achievement this year</label><div class="fh">What are you most proud of? What had the most impact?</div><textarea id="achievement" rows="3" placeholder="e.g. Led end-to-end delivery of a deals analysis report, receiving strong client feedback..."></textarea></div>
-        <div class="fg"><label>Where you found it hardest</label><div class="fh">Be honest — this shows self-awareness.</div><textarea id="hardest" rows="3" placeholder="e.g. Managing my workload during high-volume periods..."></textarea></div>
-        <div class="fg"><label>What you'd like more of next year</label><div class="fh">Types of work, clients, responsibilities, projects.</div><textarea id="wantMore" rows="3" placeholder="e.g. More involvement in insights/market reports..."></textarea></div>
-        <div class="fg"><label>Anything to raise with your manager</label><div class="fh">Team dynamics, processes, development, anything else.</div><textarea id="raise" rows="3" placeholder="e.g. Would appreciate clearer priorities when deadlines clash..."></textarea></div>
+        <div class="fg"><label>Biggest achievement this year</label><div class="fh">What are you most proud of? What had the most impact?</div><textarea id="achievement" oninput="state.achievement=this.value;scheduleSave()" rows="3" placeholder="e.g. Led end-to-end delivery of a deals analysis report, receiving strong client feedback..."></textarea></div>
+        <div class="fg"><label>Where you found it hardest</label><div class="fh">Be honest — this shows self-awareness.</div><textarea id="hardest" oninput="state.hardest=this.value;scheduleSave()" rows="3" placeholder="e.g. Managing my workload during high-volume periods..."></textarea></div>
+        <div class="fg"><label>What you'd like more of next year</label><div class="fh">Types of work, clients, responsibilities, projects.</div><textarea id="wantMore" oninput="state.wantMore=this.value;scheduleSave()" rows="3" placeholder="e.g. More involvement in insights/market reports..."></textarea></div>
+        <div class="fg"><label>Anything to raise with your manager</label><div class="fh">Team dynamics, processes, development, anything else.</div><textarea id="raise" oninput="state.raise=this.value;scheduleSave()" rows="3" placeholder="e.g. Would appreciate clearer priorities when deadlines clash..."></textarea></div>
         <div style="display:flex;gap:10px;margin-top:24px">
           <button class="btn btn-out" onclick="goTo('objectives')">← Back</button>
           <button class="btn btn-dark" onclick="goTo('goals')">Next: Goals & Growth →</button>
@@ -503,9 +491,9 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
         <div class="who-b who-emp">✏️ Reviewee completes this</div>
         <div class="sec-h">Goals & Growth</div>
         <div class="sec-d">Where do you want to go, and what will help you get there?</div>
-        <div class="fg"><label>Career aspirations (1–2 years)</label><div class="fh">What role or type of work do you see yourself doing?</div><textarea id="aspirations" rows="3" placeholder="e.g. Move into a more senior role with more responsibility..."></textarea></div>
-        <div class="fg"><label>Skills to develop</label><div class="fh">Specific skills, knowledge areas, or experiences.</div><textarea id="skills" rows="3" placeholder="e.g. Infographic design, account management, social media strategy..."></textarea></div>
-        <div class="fg"><label>Training / support needed</label><div class="fh">Courses, shadowing, mentoring, external events.</div><textarea id="training" rows="3" placeholder="e.g. Shadowing on caytoo labs work, ESA webinars quarterly..."></textarea></div>
+        <div class="fg"><label>Career aspirations (1–2 years)</label><div class="fh">What role or type of work do you see yourself doing?</div><textarea id="aspirations" oninput="state.aspirations=this.value;scheduleSave()" rows="3" placeholder="e.g. Move into a more senior role with more responsibility..."></textarea></div>
+        <div class="fg"><label>Skills to develop</label><div class="fh">Specific skills, knowledge areas, or experiences.</div><textarea id="skills" oninput="state.skills=this.value;scheduleSave()" rows="3" placeholder="e.g. Infographic design, account management, social media strategy..."></textarea></div>
+        <div class="fg"><label>Training / support needed</label><div class="fh">Courses, shadowing, mentoring, external events.</div><textarea id="training" oninput="state.training=this.value;scheduleSave()" rows="3" placeholder="e.g. Shadowing on caytoo labs work, ESA webinars quarterly..."></textarea></div>
         <div style="display:flex;gap:10px;margin-top:24px">
           <button class="btn btn-out" onclick="goTo('self')">← Back</button>
           <button class="btn btn-mint" onclick="goTo('peers')">Reviewee done ✓ — Manager: Peer Feedback →</button>
@@ -559,9 +547,9 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
             <div class="rat-card" data-r="5" onclick="setRating(5)"><span class="rn">5</span><span class="rd">Needs focus</span></div>
           </div>
         </div>
-        <div class="fg"><label>Overall assessment</label><div class="fh">Summary of their performance, conduct and contribution this year.</div><textarea id="managerComments" rows="5" placeholder="e.g. Reviewee has had another strong year..."></textarea></div>
-        <div class="fg"><label>Key strengths to build on</label><textarea id="strengths" rows="3" placeholder="e.g. Report writing quality, initiative..."></textarea></div>
-        <div class="fg"><label>Main areas to develop</label><textarea id="develop" rows="3" placeholder="e.g. Proactive communication on workload..."></textarea></div>
+        <div class="fg"><label>Overall assessment</label><div class="fh">Summary of their performance, conduct and contribution this year.</div><textarea id="managerComments" rows="5" placeholder="e.g. Reviewee has had another strong year..." oninput="state.managerComments=this.value;scheduleSave()"></textarea></div>
+        <div class="fg"><label>Key strengths to build on</label><textarea id="strengths" rows="3" placeholder="e.g. Report writing quality, initiative..." oninput="state.strengths=this.value;scheduleSave()"></textarea></div>
+        <div class="fg"><label>Main areas to develop</label><textarea id="develop" rows="3" placeholder="e.g. Proactive communication on workload..." oninput="state.develop=this.value;scheduleSave()"></textarea></div>
         <div style="display:flex;gap:10px;margin-top:24px">
           <button class="btn btn-out" onclick="goTo('peers')">← Back</button>
           <button class="btn btn-dark" onclick="goTo('actions')">Next: Actions & Targets →</button>
@@ -621,30 +609,10 @@ const USERS = [
   { id:'u5', name:'Jeremy Wheatcroft',       code:'CAYT-JW01', role:'employee',isAdmin:false, color:'#9B6BD4', ini:'JW', managerId:'u2',  jobTitle:'Analyst' },
 ];
 
-// Previous year's agreed actions per employee — these seed new review objectives
-const PREV_ACTIONS = {
-  u3:[
-    { text:'Take on QC of at least 2 reports per month', priority:'high', prevStatus:'complete' },
-    { text:'Lead on one market insight piece per quarter', priority:'high', prevStatus:'active' },
-    { text:'Shadow account management calls monthly', priority:'med', prevStatus:'not-started' },
-    { text:'Identify and attend a social media course', priority:'low', prevStatus:'not-started' },
-  ],
-  u4:[
-    { text:'Set realistic workload boundaries and push back when needed', priority:'high', prevStatus:'complete' },
-    { text:'Become primary contact for at least 3 clients independently', priority:'high', prevStatus:'active' },
-    { text:'Attend 2 industry events in next 12 months', priority:'med', prevStatus:'not-started' },
-    { text:'Contribute to QC / insights reports', priority:'med', prevStatus:'not-started' },
-  ],
-  u5:[],
-};
 
 // ══════════════════════════════════════
 // CONFIG — paste your n8n webhook URLs here
 // ══════════════════════════════════════
-// STORAGE_MODE:
-//   'sharepoint' — reads/writes via n8n → SharePoint (production)
-const STORAGE_MODE = 'sharepoint'; // 'local' = hardcoded array | 'sharepoint' = live SharePoint data
-
 const N8N_BASE = 'https://caytoo-ops-n8n.bravepond-37f4561a.ukwest.azurecontainerapps.io/webhook';
 const CFG = {
   loadUser:    N8N_BASE + '/caytoo-load-user',
@@ -667,7 +635,7 @@ let CU = null; // current user
 let activeRevieweeId = null;
 let activeReviewId = null; // SharePoint item ID for the current review
 let aiSuggestions = null;
-let saveTimer = null; // debounce auto-save
+let saveTimer = null;
 
 const state = {
   role:null, rating:null, objectives:[], peers:[
@@ -684,53 +652,32 @@ const state = {
 // ══════════════════════════════════════
 // LOGIN — local or SharePoint
 // ══════════════════════════════════════
-function useCode(code) {
-  document.getElementById('codeInput').value = code;
-  doLogin();
-}
 
 async function doLogin() {
   const code = document.getElementById('codeInput').value.trim().toUpperCase();
   const err = document.getElementById('loginErr');
   const btn = document.querySelector('#pg-login .btn-brand');
   if (!code) { err.textContent = 'Please enter your access code'; return; }
-
-  if (STORAGE_MODE === 'local') {
-    // ── Local mode: use hardcoded USERS array ──
-    const user = USERS.find(u => u.code === code);
-    if (!user) { err.textContent = 'Access code not recognised — please check and try again'; return; }
-    err.textContent = '';
-    CU = user;
-    bootApp(null);
-  } else {
-    // ── SharePoint mode: validate via n8n ──
-    err.textContent = '';
-    if (btn) { btn.textContent = 'Signing in…'; btn.disabled = true; }
-    try {
-      const res = await fetch(CFG.loadUser, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code })
-      });
-      const data = await res.json();
-      if (!data.success && !data.user) {
-        err.textContent = data.error || 'Access code not recognised — please check and try again';
-        if (btn) { btn.textContent = 'Sign in →'; btn.disabled = false; }
-        return;
-      }
-      // data.user might be present even if success is false (e.g. user has no reviews)
-      if (!data.user) {
-        err.textContent = data.error || 'Access code not recognised — please check and try again';
-        if (btn) { btn.textContent = 'Sign in →'; btn.disabled = false; }
-        return;
-      }
-      CU = data.user;
-      bootApp(data);
-    } catch(e) {
-      err.textContent = 'Could not connect — check your network and try again';
-      console.error('Login error:', e);
+  err.textContent = '';
+  if (btn) { btn.textContent = 'Signing in…'; btn.disabled = true; }
+  try {
+    const res = await fetch(CFG.loadUser, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code })
+    });
+    const data = await res.json();
+    if (!data.user) {
+      err.textContent = data.error || 'Access code not recognised — please check and try again';
       if (btn) { btn.textContent = 'Sign in →'; btn.disabled = false; }
+      return;
     }
+    CU = data.user;
+    bootApp(data);
+  } catch(e) {
+    err.textContent = 'Could not connect — check your network and try again';
+    console.error('Login error:', e);
+    if (btn) { btn.textContent = 'Sign in →'; btn.disabled = false; }
   }
 }
 
@@ -818,7 +765,6 @@ async function bootApp(loginData) {
 // LOAD ALL USERS FROM SHAREPOINT
 // ══════════════════════════════════════
 async function loadUsersFromSharePoint() {
-  if (STORAGE_MODE !== 'sharepoint') return;
   try {
     const res = await fetch(CFG.loadUsers, {
       method: 'POST',
@@ -841,7 +787,6 @@ async function loadUsersFromSharePoint() {
 // SAVE / DELETE USER IN SHAREPOINT
 // ══════════════════════════════════════
 async function saveUserToSharePoint(user) {
-  if (STORAGE_MODE !== 'sharepoint') return;
   try {
     await fetch(CFG.saveUser, {
       method: 'POST',
@@ -852,7 +797,6 @@ async function saveUserToSharePoint(user) {
 }
 
 async function deleteUserFromSharePoint(userId) {
-  if (STORAGE_MODE !== 'sharepoint') return;
   try {
     await fetch(CFG.deleteUser, {
       method: 'POST',
@@ -866,15 +810,23 @@ async function deleteUserFromSharePoint(userId) {
 // AUTO-SAVE to SharePoint
 // ══════════════════════════════════════
 function scheduleSave() {
-  if (STORAGE_MODE !== 'sharepoint') return;
   if (saveTimer) clearTimeout(saveTimer);
   saveTimer = setTimeout(pushSaveToSharePoint, 3000); // debounce 3 seconds
 }
 
 async function pushSaveToSharePoint() {
   if (!CU || !activeRevieweeId) return;
-  if (STORAGE_MODE !== 'sharepoint') return;
   saveCurrentView();
+  // Safety guard: if all text fields are empty but objectives exist, 
+  // something went wrong — abort this save to prevent data loss
+  const hasObjectives = state.objectives?.some(o => o.title);
+  const hasAnyText = state.achievement || state.hardest || state.wantMore ||
+    state.aspirations || state.skills || state.training ||
+    state.managerComments || state.strengths || state.develop;
+  if (hasObjectives && !hasAnyText && state.completed?.size > 2) {
+    console.warn('[caytoo] Aborting save — suspicious blank state detected');
+    return;
+  }
 
   const ss = document.getElementById('saveStatus');
   if (ss) ss.textContent = 'Saving…';
@@ -1392,6 +1344,8 @@ function removeUser(userId) {
 // ══════════════════════════════════════
 async function openReview(userId, preloadedData, period) {
   try {
+  // Cancel any pending save from a previous review to prevent cross-user data corruption
+  if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; }
   activeRevieweeId = userId;
   const reviewee = USERS.find(u => u.id === userId) || CU;
   document.getElementById('revHdrName').textContent =
@@ -1465,13 +1419,21 @@ function resetState() {
   if (aiResult) aiResult.style.display = 'none';
   const aiStatus = document.getElementById('aiStatus');
   if (aiStatus) aiStatus.textContent = '';
+  // Clear all textarea DOM values immediately so stale data can't bleed into new review
+  ['achievement','hardest','wantMore','raise','aspirations','skills','training',
+   'managerComments','strengths','develop','nextReviewDate'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  // Clear rating UI
+  document.querySelectorAll('.rat-btn').forEach(b => b.classList.remove('sel'));
 }
 
 function seedForUser(userId, latestReviewData) {
   // latestReviewData: the reviewData object from the most recent COMPLETE review (if any)
   // We ONLY carry over actions as objectives — nothing else
   // latestReviewData must be from a complete review; in-progress data is ignored here
-  const prev = (latestReviewData?.actions || []).filter(a => a.text) || PREV_ACTIONS[userId] || [];
+  const prev = (latestReviewData?.actions || []).filter(a => a.text);
   // Always ensure completed is empty for a fresh review
   state.completed = new Set();
   if (prev.length > 0) {
@@ -1490,9 +1452,9 @@ function seedForUser(userId, latestReviewData) {
     document.getElementById('carriedNotice').style.display = 'none';
   }
   state.actions = [
-    {text:'',priority:'high',status:'not-started'},
-    {text:'',priority:'med', status:'not-started'},
-    {text:'',priority:'low', status:'not-started'},
+    {text:'',priority:'core',status:'not-started'},
+    {text:'',priority:'new', status:'not-started'},
+    {text:'',priority:'new', status:'not-started'},
   ];
   renderObjectives(); renderPeers(); renderActions();
 }
@@ -1522,11 +1484,6 @@ function goTo(view) {
   window.scrollTo(0,0);
 }
 
-function setRole(r) {
-  state.role = r;
-  document.getElementById('roleReviewee').classList.toggle('sel', r==='reviewee');
-  document.getElementById('roleManager').classList.toggle('sel', r==='manager');
-}
 
 // ══════════════════════════════════════
 // OBJECTIVES
@@ -1681,13 +1638,13 @@ function renderActions() {
       <div style="display:flex;align-items:center;gap:7px;min-width:0">
         <div style="cursor:grab;color:var(--muted);font-size:14px;flex-shrink:0;padding:0 2px;user-select:none" title="Drag to reorder">⠿</div>
         <div style="width:7px;height:7px;border-radius:50%;background:${dc};flex-shrink:0"></div>
-        <textarea class="act-inp" placeholder="Action or target…" oninput="state.actions[${i}].text=this.value" style="resize:none;height:auto;min-height:38px;overflow:hidden;padding:0;line-height:1.5" rows="2">${(a.text||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
+        <textarea class="act-inp" placeholder="Action or target…" oninput="state.actions[${i}].text=this.value;scheduleSave()" style="resize:none;height:auto;min-height:38px;overflow:hidden;padding:0;line-height:1.5" rows="2">${(a.text||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
       </div>
-      <select class="act-sel" onchange="state.actions[${i}].priority=this.value;renderActions()">
+      <select class="act-sel" onchange="state.actions[${i}].priority=this.value;renderActions();scheduleSave()">
         <option value="core" ${(a.priority==='core'||a.priority==='high')?'selected':''}>⭐ Core</option>
         <option value="new"  ${(a.priority==='new'||a.priority==='med') ?'selected':''}>✨ New</option>
       </select>
-      <select class="act-sel" onchange="state.actions[${i}].status=this.value">
+      <select class="act-sel" onchange="state.actions[${i}].status=this.value;scheduleSave()">
         <option value="not-started" ${(a.status||'not-started')==='not-started'?'selected':''}>Not started</option>
         <option value="active"      ${a.status==='active'     ?'selected':''}>In progress</option>
         <option value="complete"    ${a.status==='complete'   ?'selected':''}>Complete ✓</option>
@@ -1712,13 +1669,14 @@ function renderActions() {
       const moved = state.actions.splice(from, 1)[0];
       state.actions.splice(to, 0, moved);
       renderActions();
+      scheduleSave();
     });
 
     c.appendChild(d);
   });
 }
-function addAction(){ state.actions.push({text:'',priority:'new',status:'not-started'}); renderActions(); }
-function removeAction(i){ state.actions.splice(i,1); renderActions(); }
+function addAction(){ state.actions.push({text:'',priority:'new',status:'not-started'}); renderActions(); scheduleSave(); }
+function removeAction(i){ state.actions.splice(i,1); renderActions(); scheduleSave(); }
 
 // ══════════════════════════════════════
 // AI SUMMARY GENERATION
@@ -1941,31 +1899,35 @@ function restoreState(data) {
     setRating(data.rating);
   }
 
-  // Restore textarea values once DOM is ready
-  // Restore textarea values - use longer timeout to ensure it runs after goTo
-  setTimeout(() => {
-    const tfields = ['achievement','hardest','wantMore','raise','aspirations','skills','training',
-      'managerComments','strengths','develop'];
-    tfields.forEach(id => {
-      const el = document.getElementById(id);
-      if (el && state[id]) el.value = state[id];
-    });
-    const nd = document.getElementById('nextReviewDate');
-    if (nd && state.nextReviewDate) nd.value = state.nextReviewDate;
-  }, 200);
+  // Populate DOM immediately — no setTimeout to avoid race with saveCurrentView
+  const tfields = ['achievement','hardest','wantMore','raise','aspirations','skills','training',
+    'managerComments','strengths','develop'];
+  tfields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = state[id] || '';
+  });
+  const nd = document.getElementById('nextReviewDate');
+  if (nd) nd.value = state.nextReviewDate || '';
 }
 
 function saveCurrentView() {
+  // State is kept in sync by oninput handlers on all textareas.
+  // Only read from DOM for the currently visible view, and NEVER overwrite
+  // a non-empty state value with an empty DOM value (protects against blank saves).
+  const currentViewEl = document.querySelector('.view.on');
+  if (!currentViewEl) return;
   ['achievement','hardest','wantMore','raise','aspirations','skills','training','managerComments','strengths','develop'].forEach(id => {
     const el = document.getElementById(id);
-    // Only save if the element's parent view is currently visible, to avoid
-    // hidden empty textareas clobbering restored state
-    if (el && el.closest('.view')?.classList.contains('on')) state[id] = el.value;
-    else if (el && el.value) state[id] = el.value; // save if non-empty regardless
+    if (el && currentViewEl.contains(el)) {
+      const domVal = el.value;
+      // Only write to state if DOM has a value, OR state is already empty
+      if (domVal || !state[id]) state[id] = domVal;
+    }
   });
   const nd = document.getElementById('nextReviewDate');
-  if (nd && (nd.closest('.view')?.classList.contains('on') || nd.value)) state.nextReviewDate = nd.value;
-  // Actions are kept in sync via oninput handlers — no extra save needed
+  if (nd && currentViewEl.contains(nd)) {
+    if (nd.value || !state.nextReviewDate) state.nextReviewDate = nd.value;
+  }
 }
 
 function sc(s){ return ['','var(--s1)','var(--s2)','var(--s3)','var(--s4)','var(--s5)'][s]||'#ccc'; }
@@ -1993,8 +1955,12 @@ function buildSummary() {
         <div style="font-size:12px;color:var(--muted)">${obj.filter(o=>o.score).length}/${obj.length} scored</div>
       </div>
       <div class="sum-card"><h3>Objectives</h3>
-        ${obj.map(o=>`<div class="obj-sr"><span>${o.carried?'🔄 ':''}${o.title}</span>
-          <div class="obj-sc" style="background:${sc(o.score)};color:${stc(o.score)}">${o.score||'?'}</div>
+        ${obj.map(o=>`<div class="obj-sr">
+          <div style="flex:1;min-width:0">
+            <span>${o.carried?'🔄 ':''}${o.title}</span>
+            ${o.selfNote?`<div style="font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5">${o.selfNote}</div>`:''}
+          </div>
+          <div class="obj-sc" style="background:${sc(o.score)};color:${stc(o.score)};flex-shrink:0">${o.score||'?'}</div>
         </div>`).join('')}
       </div>
       <div class="sum-card"><h3>Actions & Targets (${acts.length})</h3>
@@ -2006,6 +1972,17 @@ function buildSummary() {
       <p style="font-size:13px;line-height:1.7">${state.managerComments||'<em style="color:var(--muted)">Not yet completed</em>'}</p>
       ${state.strengths?`<p style="font-size:13px;line-height:1.6;margin-top:10px"><strong>Strengths:</strong> ${state.strengths}</p>`:''}
       ${state.develop?`<p style="font-size:13px;line-height:1.6;margin-top:6px"><strong>To develop:</strong> ${state.develop}</p>`:''}
+    </div>`;
+  }
+
+  if (state.achievement || state.hardest || state.wantMore || state.raise) {
+    html += `<div class="sum-card full"><h3>Self-Assessment</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        ${state.achievement?`<div><div class="hf-label">Biggest achievement</div><p class="hf-val">${state.achievement}</p></div>`:''}
+        ${state.hardest?`<div><div class="hf-label">Hardest part</div><p class="hf-val">${state.hardest}</p></div>`:''}
+        ${state.wantMore?`<div><div class="hf-label">Want more of</div><p class="hf-val">${state.wantMore}</p></div>`:''}
+        ${state.raise?`<div><div class="hf-label">Raised with manager</div><p class="hf-val">${state.raise}</p></div>`:''}
+      </div>
     </div>`;
   }
 
