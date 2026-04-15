@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -567,7 +568,7 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
         <div class="fg"><label>Next review date</label><input type="date" id="nextReviewDate" style="width:220px"></div>
         <div style="display:flex;gap:10px;margin-top:20px">
           <button class="btn btn-out" onclick="goTo('manager')">← Back</button>
-          <button class="btn btn-brand" onclick="goTo('summary')" style="padding:13px 28px;font-size:14px">Complete & View Summary →</button>
+          <button class="btn btn-brand" onclick="goTo('summary')" style="padding:13px 28px;font-size:14px">View Summary →</button>
         </div>
       </div>
 
@@ -576,6 +577,34 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
         <div class="sec-h">Review Summary</div>
         <div class="sec-d">A snapshot of this review — export or print to keep on file.</div>
         <div id="summaryContent"></div>
+        <div id="submitReviewBanner" style="margin-top:24px;display:none">
+          <div style="background:var(--brand-lt);border:1.5px solid var(--brand);border-radius:12px;padding:18px 20px;display:flex;align-items:center;gap:16px">
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:14px;color:var(--brand);margin-bottom:3px">Ready to submit?</div>
+              <div style="font-size:13px;color:var(--muted)">Once submitted, your manager will be able to see your responses and complete the review.</div>
+            </div>
+            <button class="btn btn-brand" onclick="submitReview()" style="padding:11px 22px;white-space:nowrap">Submit review ✓</button>
+          </div>
+        </div>
+        <div id="submittedBanner" style="margin-top:24px;display:none">
+          <div style="background:#E8F9F3;border:1.5px solid var(--teal);border-radius:12px;padding:18px 20px;font-size:13px;color:#1a7a5a">
+            ✓ <strong>Review submitted.</strong> Your manager will now complete their assessment.
+          </div>
+        </div>
+        <div id="managerCompleteBanner" style="margin-top:24px;display:none">
+          <div style="background:var(--brand-lt);border:1.5px solid var(--brand);border-radius:12px;padding:18px 20px;display:flex;align-items:center;gap:16px">
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:14px;color:var(--brand);margin-bottom:3px">Mark review as complete</div>
+              <div style="font-size:13px;color:var(--muted)">This will finalise the review and update the status in the Data Table.</div>
+            </div>
+            <button class="btn btn-brand" onclick="managerCompleteReview()" style="padding:11px 22px;white-space:nowrap">Mark complete ✓</button>
+          </div>
+        </div>
+        <div id="managerCompletedBanner" style="margin-top:24px;display:none">
+          <div style="background:#E8F9F3;border:1.5px solid var(--teal);border-radius:12px;padding:18px 20px;font-size:13px;color:#1a7a5a">
+            ✓ <strong>Review marked as complete.</strong>
+          </div>
+        </div>
         <div style="display:flex;gap:10px;margin-top:24px">
           <button class="btn btn-out" onclick="goTo('actions')">← Back</button>
           <button class="btn btn-dark" onclick="window.print()">🖨 Print / Export</button>
@@ -646,6 +675,7 @@ const state = {
   period:'',
   achievement:'',hardest:'',wantMore:'',raise:'',
   aspirations:'',skills:'',training:'',
+  submitted: false,
   managerComments:'',strengths:'',develop:'',nextReviewDate:'',
 };
 
@@ -809,6 +839,64 @@ async function deleteUserFromSharePoint(userId) {
 // ══════════════════════════════════════
 // AUTO-SAVE to SharePoint
 // ══════════════════════════════════════
+async function submitReview() {
+  const btn = document.querySelector('#submitReviewBanner .btn-brand');
+  if (btn) { btn.textContent = 'Submitting…'; btn.disabled = true; }
+  state.submitted = true;
+  applyRoleVisibility();
+  // Save with status complete
+  if (!CU || !activeRevieweeId) return;
+  saveCurrentView();
+  const payload = {
+    userId: activeRevieweeId,
+    Title: activeRevieweeId + '_' + (state.period || '').replace(/[^a-zA-Z0-9\-]/g, ''),
+    period: state.period || 'Unknown',
+    status: 'complete',
+    reviewData: JSON.stringify({ ...state, completed: [...state.completed], submitted: true }),
+  };
+  if (activeReviewId) payload.reviewId = activeReviewId;
+  try {
+    await fetch(CFG.saveReview, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    document.getElementById('submitReviewBanner').style.display = 'none';
+    document.getElementById('submittedBanner').style.display = 'block';
+    toast('Review submitted successfully!');
+  } catch(e) {
+    if (btn) { btn.textContent = 'Submit review ✓'; btn.disabled = false; }
+    toast('Could not submit — please try again');
+    state.submitted = false;
+    applyRoleVisibility();
+  }
+}
+
+async function managerCompleteReview() {
+  const btn = document.querySelector('#managerCompleteBanner .btn-brand');
+  if (btn) { btn.textContent = 'Saving…'; btn.disabled = true; }
+  saveCurrentView();
+  const payload = {
+    userId: activeRevieweeId,
+    Title: activeRevieweeId + '_' + (state.period || '').replace(/[^a-zA-Z0-9\-]/g, ''),
+    period: state.period || 'Unknown',
+    status: 'complete',
+    reviewData: JSON.stringify({ ...state, completed: [...state.completed], submitted: true }),
+  };
+  if (activeReviewId) payload.reviewId = activeReviewId;
+  try {
+    await fetch(CFG.saveReview, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    document.getElementById('managerCompleteBanner').style.display = 'none';
+    document.getElementById('managerCompletedBanner').style.display = 'block';
+    toast('Review marked as complete!');
+  } catch(e) {
+    if (btn) { btn.textContent = 'Mark complete ✓'; btn.disabled = false; }
+    toast('Could not save — please try again');
+  }
+}
+
 function scheduleSave() {
   if (saveTimer) clearTimeout(saveTimer);
   saveTimer = setTimeout(pushSaveToSharePoint, 3000); // debounce 3 seconds
@@ -1020,7 +1108,7 @@ async function renderTeam() {
 
       if (open) {
         // Has an in-progress review — clicking should open it directly
-        document.getElementById('tc-' + emp.id).onclick = () => openReview(emp.id, open.reviewData, open.period);
+        document.getElementById('tc-' + emp.id).onclick = () => openReview(emp.id, {...open.reviewData, _reviewStatus: open.status}, open.period);
         statusEl.innerHTML = '<span class="badge b-teal">In progress</span>' +
           '<div style="font-size:11px;color:var(--muted);margin-top:3px">' + (open.period||'') + '</div>' + nrdStr;
       } else {
@@ -1372,6 +1460,8 @@ async function openReview(userId, preloadedData, period) {
     // Resuming an existing review — restore saved state
     seedForUser(userId, null);
     restoreState(preloadedData);
+    // If review was already complete, mark as submitted
+    if (preloadedData._reviewStatus === 'complete') state.submitted = true;
     // period from preloadedData.period if not passed directly
     if (!period && preloadedData.period) state.period = preloadedData.period;
   } else {
@@ -1408,6 +1498,7 @@ function resetState() {
   state.period='';
   state.achievement=''; state.hardest=''; state.wantMore=''; state.raise='';
   state.aspirations=''; state.skills=''; state.training='';
+  state.submitted = false;
   state.managerComments=''; state.strengths=''; state.develop='';
   state.nextReviewDate='';
   state.peers=[
@@ -1866,6 +1957,8 @@ function restoreState(data) {
   // Restore flat fields
   const textFields = ['achievement','hardest','wantMore','raise','aspirations','skills','training',
     'managerComments','strengths','develop','nextReviewDate','role','rating'];
+  // submitted flag — true if review was formally completed
+  if (data.submitted) state.submitted = true;
   textFields.forEach(k => { if (data[k] !== undefined) state[k] = data[k]; });
 
   // Restore objectives
@@ -2015,6 +2108,17 @@ function buildSummary() {
   }
 
   document.getElementById('summaryContent').innerHTML = html;
+  // Show submit banner for reviewees who haven't submitted yet
+  const isReviewee = CU.role !== 'manager' && !CU.isAdmin;
+  const isManager = CU.role === 'manager' || CU.isAdmin;
+  const submitBanner = document.getElementById('submitReviewBanner');
+  const submittedBanner = document.getElementById('submittedBanner');
+  const mgrCompleteBanner = document.getElementById('managerCompleteBanner');
+  const mgrCompletedBanner = document.getElementById('managerCompletedBanner');
+  if (submitBanner) submitBanner.style.display = (isReviewee && !state.submitted) ? 'block' : 'none';
+  if (submittedBanner) submittedBanner.style.display = (isReviewee && state.submitted) ? 'block' : 'none';
+  if (mgrCompleteBanner) mgrCompleteBanner.style.display = (isManager && !state.submitted) ? 'block' : 'none';
+  if (mgrCompletedBanner) mgrCompletedBanner.style.display = (isManager && state.submitted) ? 'block' : 'none';
 }
 
 function copyText() {
@@ -2034,7 +2138,7 @@ function copyText() {
 // ══════════════════════════════════════
 function applyRoleVisibility() {
   const isReviewee = CU.role !== 'manager' && !CU.isAdmin;
-  const isComplete = state.completed && state.completed.has && state.completed.has('summary');
+  const isComplete = state.submitted === true;
   const hideFromReviewee = isReviewee && !isComplete;
 
   // Hide manager sidebar + view
