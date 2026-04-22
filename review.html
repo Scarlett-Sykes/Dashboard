@@ -439,10 +439,7 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
             <div class="step"><div class="step-n">4</div><div class="step-t"><strong>Meet, align, set targets for next year</strong><span>One-page summary to keep on file.</span></div></div>
           </div>
         </div>
-        <div style="max-width:500px;margin:0 auto 20px">
-          <p style="font-weight:600;margin-bottom:10px;text-align:center;font-size:13px">I am completing this as...</p>
 
-        </div>
         <div style="text-align:center;margin-top:20px">
           <button class="btn btn-brand" onclick="goTo('objectives')" style="padding:13px 30px;font-size:14px">Start Review →</button>
         </div>
@@ -667,7 +664,7 @@ let aiSuggestions = null;
 let saveTimer = null;
 
 const state = {
-  role:null, rating:null, objectives:[], peers:[
+  rating:null, objectives:[], peers:[
     {chosenBy:'reviewee',name:'',userId:null,strengths:'',development:'',collab:''},
     {chosenBy:'manager', name:'',userId:null,strengths:'',development:'',collab:''},
   ],
@@ -1494,7 +1491,7 @@ async function openReview(userId, preloadedData, period) {
 }
 
 function resetState() {
-  state.role=null; state.rating=null; state.completed=new Set();
+  state.rating=null; state.completed=new Set();
   state.period='';
   state.achievement=''; state.hardest=''; state.wantMore=''; state.raise='';
   state.aspirations=''; state.skills=''; state.training='';
@@ -1957,7 +1954,7 @@ function addSuggestedAction(text, priority) {
 function restoreState(data) {
   // Restore flat fields
   const textFields = ['achievement','hardest','wantMore','raise','aspirations','skills','training',
-    'managerComments','strengths','develop','nextReviewDate','role','rating'];
+    'managerComments','strengths','develop','nextReviewDate','rating'];
   // submitted flag — true if review was formally completed
   if (data.submitted) state.submitted = true;
   textFields.forEach(k => { if (data[k] !== undefined) state[k] = data[k]; });
