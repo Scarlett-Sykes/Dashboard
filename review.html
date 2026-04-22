@@ -435,7 +435,7 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
           <div class="steps">
             <div class="step"><div class="step-n">1</div><div class="step-t"><strong>Reviewee fills in objectives + self-assessment</strong><span>~20–30 mins. Rate yourself and add context.</span></div></div>
             <div class="step"><div class="step-n">2</div><div class="step-t"><strong>2 peers provide short written feedback</strong><span>~10 mins each.</span></div></div>
-            <div class="step"><div class="step-n">3</div><div class="step-t"><strong>Manager writes their assessment of the reviewee's year</strong><span>~10-15 mins.</span></div></div>
+            <div class="step"><div class="step-n">3</div><div class="step-t"><strong>AI drafts the manager assessment</strong><span>~10-15 mins.</span></div></div>
             <div class="step"><div class="step-n">4</div><div class="step-t"><strong>Meet, align, set targets for next year</strong><span>One-page summary to keep on file.</span></div></div>
           </div>
         </div>
@@ -1571,6 +1571,7 @@ function goTo(view) {
   const idx = VIEWS.indexOf(view);
   document.getElementById('progBar').style.width = Math.round((idx/(VIEWS.length-1))*100)+'%';
   if (view === 'summary') buildSummary();
+  else document.title = 'caytoo — Performance Review';
   applyRoleVisibility();
   window.scrollTo(0,0);
 }
@@ -2033,82 +2034,104 @@ function buildSummary() {
   saveCurrentView();
   const obj = state.objectives.filter(o=>o.title);
   const acts = state.actions.filter(a=>a.text);
+  const peers = state.peers.filter(p=>p.name||p.strengths);
   const avg = obj.length && obj.some(o=>o.score)
-    ? (obj.reduce((s,o)=>s+(o.score||0),0)/obj.filter(o=>o.score).length).toFixed(1) : '—';
-  const reviewee = USERS.find(u => u.id === activeRevieweeId);
+    ? (obj.reduce((s,o)=>s+(o.score||0),0)/obj.filter(o=>o.score).length).toFixed(1) : null;
+  const ratingBg = state.rating ? sc(state.rating) : '#e0e0e0';
+  const ratingColor = state.rating && state.rating <= 2 ? 'var(--text)' : 'white';
 
-  let html = `
-    <div class="sum-grid">
-      <div class="sum-card"><h3>Overall Rating</h3>
-        <div class="big-n" style="color:${sc(state.rating)}">${state.rating||'—'}</div>
-        <div style="font-size:12px;color:var(--muted)">${state.rating?sl(state.rating):'Not yet set'}</div>
-      </div>
-      <div class="sum-card"><h3>Avg. Score</h3>
-        <div class="big-n">${avg}</div>
-        <div style="font-size:12px;color:var(--muted)">${obj.filter(o=>o.score).length}/${obj.length} scored</div>
-      </div>
-      <div class="sum-card"><h3>Objectives</h3>
-        ${obj.map(o=>`<div class="obj-sr">
-          <div style="flex:1;min-width:0">
-            <span>${o.carried?'🔄 ':''}${o.title}</span>
-            ${o.selfNote?`<div style="font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5">${o.selfNote}</div>`:''}
-          </div>
-          <div class="obj-sc" style="background:${sc(o.score)};color:${stc(o.score)};flex-shrink:0">${o.score||'?'}</div>
-        </div>`).join('')}
-      </div>
-      <div class="sum-card"><h3>Actions & Targets (${acts.length})</h3>
-        <div class="act-sum">${acts.map(a=>`<div class="act-si"><span class="tg ${pc(a.priority)}">${pl(a.priority)}</span><span>${a.text}</span></div>`).join('')}</div>
-      </div>`;
+  let html = `<div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding:16px 20px;background:var(--surface);border:1.5px solid var(--border);border-radius:12px">
+    <div style="width:48px;height:48px;border-radius:50%;background:${ratingBg};color:${ratingColor};display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;font-family:'DM Serif Display',serif;flex-shrink:0">${state.rating||'—'}</div>
+    <div>
+      <div style="font-weight:700;font-size:15px">${state.period||'Current review'}</div>
+      <div style="font-size:12px;color:var(--muted)">${state.rating?sl(state.rating):'Rating not yet set'}${avg?' · Avg. objective score: '+avg:''}</div>
+    </div>
+  </div>`;
 
-  if (state.managerComments || state.achievement) {
-    html += `<div class="sum-card full"><h3>Manager's Assessment</h3>
-      <p style="font-size:13px;line-height:1.7">${state.managerComments||'<em style="color:var(--muted)">Not yet completed</em>'}</p>
-      ${state.strengths?`<p style="font-size:13px;line-height:1.6;margin-top:10px"><strong>Strengths:</strong> ${state.strengths}</p>`:''}
-      ${state.develop?`<p style="font-size:13px;line-height:1.6;margin-top:6px"><strong>To develop:</strong> ${state.develop}</p>`:''}
+  html += `<div style="background:var(--surface);border:1.5px solid var(--border);border-radius:12px;overflow:hidden">`;
+
+  if (obj.length) {
+    html += `<div class="hrev-sec">
+      <div class="hrev-sec-title">Objectives</div>
+      ${obj.map(o=>`<div class="hobj-row">
+        <div class="hobj-sc" style="background:${o.score?sc(o.score):'#ccc'}">${o.score||'?'}</div>
+        <div class="hobj-text">
+          <strong>${o.carried?'🔄 ':''}${o.title}</strong>
+          ${o.selfNote?`<div class="hn"><em>Self:</em> ${o.selfNote}</div>`:''}
+        </div>
+      </div>`).join('')}
     </div>`;
   }
 
-  if (state.achievement || state.hardest || state.wantMore || state.raise) {
-    html += `<div class="sum-card full"><h3>Self-Assessment</h3>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        ${state.achievement?`<div><div class="hf-label">Biggest achievement</div><p class="hf-val">${state.achievement}</p></div>`:''}
+  if (state.achievement||state.hardest||state.wantMore||state.raise) {
+    html += `<div class="hrev-sec">
+      <div class="hrev-sec-title">Self-assessment</div>
+      <div class="hist-2col">
+        ${state.achievement?`<div><div class="hf-label">Greatest achievement</div><p class="hf-val">${state.achievement}</p></div>`:''}
         ${state.hardest?`<div><div class="hf-label">Hardest part</div><p class="hf-val">${state.hardest}</p></div>`:''}
         ${state.wantMore?`<div><div class="hf-label">Want more of</div><p class="hf-val">${state.wantMore}</p></div>`:''}
-        ${state.raise?`<div><div class="hf-label">Raised with manager</div><p class="hf-val">${state.raise}</p></div>`:''}
+        ${state.raise?`<div><div class="hf-label">Other comments</div><p class="hf-val">${state.raise}</p></div>`:''}
       </div>
     </div>`;
   }
 
-  if (state.peers.some(p=>p.strengths)) {
-    html += `<div class="sum-card full"><h3>Peer Feedback</h3>
-      ${state.peers.filter(p=>p.name||p.strengths).map(p=>`
-        <div style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)">
-          <div style="font-weight:700;font-size:13px;margin-bottom:6px">${p.name||'Anonymous'} <span style="font-size:11px;color:var(--muted);font-weight:400">(${p.chosenBy==='reviewee'?"reviewee's choice":"manager's choice"})</span></div>
-          ${p.strengths?`<p style="font-size:13px;line-height:1.6;margin-bottom:4px"><strong>Strengths:</strong> ${p.strengths}</p>`:''}
-          ${p.development?`<p style="font-size:13px;line-height:1.6;margin-bottom:4px"><strong>Development:</strong> ${p.development}</p>`:''}
-          ${p.collab?`<p style="font-size:13px;line-height:1.6"><strong>Working with them:</strong> ${p.collab}</p>`:''}
-        </div>`).join('')}
+  if (state.aspirations||state.skills||state.training) {
+    html += `<div class="hrev-sec">
+      <div class="hrev-sec-title">Growth & aspirations</div>
+      <div class="hist-2col">
+        ${state.aspirations?`<div><div class="hf-label">Aspirations</div><p class="hf-val">${state.aspirations}</p></div>`:''}
+        ${state.skills?`<div><div class="hf-label">Skills needed</div><p class="hf-val">${state.skills}</p></div>`:''}
+        ${state.training?`<div style="grid-column:1/-1"><div class="hf-label">Training</div><p class="hf-val">${state.training}</p></div>`:''}
+      </div>
     </div>`;
   }
 
-  html += '</div>';
+  if (peers.length) {
+    html += `<div class="hrev-sec">
+      <div class="hrev-sec-title">Peer feedback</div>
+      ${peers.map(p=>`<div class="hpeer-block">
+        <div class="hpeer-name">${p.name||'Anonymous'}<span>(${p.chosenBy==='reviewee'?"your choice":"manager's choice"})</span></div>
+        ${p.strengths?`<p style="font-size:13px;line-height:1.6;margin:0 0 4px"><strong>Strengths:</strong> ${p.strengths}</p>`:''}
+        ${p.development?`<p style="font-size:13px;line-height:1.6;margin:0 0 4px"><strong>Development:</strong> ${p.development}</p>`:''}
+        ${p.collab?`<p style="font-size:13px;line-height:1.6;margin:0"><strong>Working together:</strong> ${p.collab}</p>`:''}
+      </div>`).join('')}
+    </div>`;
+  }
 
-  if (state.aspirations||state.skills) {
-    html += `<div class="sum-card" style="margin-bottom:16px"><h3>Growth & Aspirations</h3>
-      ${state.aspirations?`<p style="font-size:13px;line-height:1.7;margin-bottom:8px"><strong>Aspirations:</strong> ${state.aspirations}</p>`:''}
-      ${state.skills?`<p style="font-size:13px;line-height:1.7;margin-bottom:8px"><strong>Skills:</strong> ${state.skills}</p>`:''}
-      ${state.training?`<p style="font-size:13px;line-height:1.7"><strong>Training:</strong> ${state.training}</p>`:''}
+  if (state.managerComments||state.strengths||state.develop) {
+    html += `<div class="hrev-sec">
+      <div class="hrev-sec-title">Manager's assessment</div>
+      ${state.managerComments?`<p style="font-size:13px;line-height:1.7;margin:0 0 10px">${state.managerComments}</p>`:''}
+      <div class="hist-2col">
+        ${state.strengths?`<div><div class="hf-label">Strengths</div><p class="hf-val">${state.strengths}</p></div>`:''}
+        ${state.develop?`<div><div class="hf-label">To develop</div><p class="hf-val">${state.develop}</p></div>`:''}
+      </div>
+    </div>`;
+  }
+
+  if (acts.length) {
+    html += `<div class="hrev-sec">
+      <div class="hrev-sec-title">Actions & targets</div>
+      ${acts.map(a=>`<div class="hact-row">
+        <span class="tg ${pc(a.priority)}">${pl(a.priority)}</span>
+        <span>${a.text}</span>
+      </div>`).join('')}
     </div>`;
   }
 
   if (state.nextReviewDate) {
-    html += `<div style="background:var(--mint-lt);border:1px solid var(--mint);border-radius:9px;padding:13px 16px;font-size:13px">
-      📅 <strong>Next review:</strong> ${new Date(state.nextReviewDate).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}
+    html += `<div class="hrev-sec" style="background:var(--mint-lt)">
+      <span style="font-size:13px">📅 <strong>Next review:</strong> ${new Date(state.nextReviewDate).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</span>
     </div>`;
   }
 
+  html += `</div>`;
   document.getElementById('summaryContent').innerHTML = html;
-  // Show submit banner for reviewees who haven't submitted yet
+
+  // Set page title for print/export filename
+  const reviewee = USERS.find(u => u.id === activeRevieweeId) || CU;
+  document.title = `caytoo — Performance Review ${reviewee.ini||reviewee.name} ${state.period||''}`.trim();
+
   const isReviewee = CU.role !== 'manager' && !CU.isAdmin;
   const isManager = CU.role === 'manager' || CU.isAdmin;
   const submitBanner = document.getElementById('submitReviewBanner');
@@ -2120,7 +2143,6 @@ function buildSummary() {
   if (mgrCompleteBanner) mgrCompleteBanner.style.display = (isManager && !state.submitted) ? 'block' : 'none';
   if (mgrCompletedBanner) mgrCompletedBanner.style.display = (isManager && state.submitted) ? 'block' : 'none';
 }
-
 function copyText() {
   const obj = state.objectives.filter(o=>o.title);
   const acts = state.actions.filter(a=>a.text);
@@ -2234,6 +2256,7 @@ function buildHistCard(r, idx) {
         <strong>${period}</strong>
         <span>${ratingLabel}${avg ? ' · Avg. objective score: ' + avg : ''}</span>
       </div>
+      <button class="btn btn-sm btn-out" style="margin-left:auto;margin-right:8px;font-size:11px;padding:4px 10px" onclick="event.stopPropagation();exportHistCard(${idx})" title="Print / Export PDF">🖨 Export</button>
       <span class="hrev-chevron">›</span>
     </div>
     <div class="hrev-body">
@@ -2306,6 +2329,52 @@ function buildHistCard(r, idx) {
 
 function toggleHCard(idx) {
   document.getElementById('hcard-'+idx).classList.toggle('open');
+}
+
+function exportHistCard(idx) {
+  // Get the review data for this card
+  // We need to find which user we're viewing and get their reviews
+  const card = document.getElementById('hcard-' + idx);
+  if (!card) return;
+
+  // Find the reviewee — either the active reviewee (manager view) or CU (employee view)
+  const reviewee = USERS.find(u => u.id === (activeRevieweeId || CU.id)) || CU;
+
+  // Get period from the card header
+  const periodEl = card.querySelector('.hrev-meta strong');
+  const period = periodEl ? periodEl.textContent : '';
+
+  // Set title for filename
+  const prevTitle = document.title;
+  document.title = `caytoo — Performance Review ${reviewee.ini||reviewee.name} ${period}`.trim();
+
+  // Open card so all content is visible, then print
+  card.classList.add('open');
+  // Hide all other cards temporarily
+  document.querySelectorAll('.hrev-card').forEach((c, i) => {
+    if (i !== idx) c.style.display = 'none';
+  });
+  // Hide the page header/nav for print
+  const printStyle = document.createElement('style');
+  printStyle.id = 'hist-print-style';
+  printStyle.textContent = `
+    @media print {
+      .pg-hd, #pg-history > div:first-child, .hist-sub, .sout, .btn { display: none !important; }
+      #pg-history { padding: 0 !important; }
+      .hrev-hd button { display: none !important; }
+    }
+  `;
+  document.head.appendChild(printStyle);
+
+  window.print();
+
+  // Restore after print
+  setTimeout(() => {
+    document.querySelectorAll('.hrev-card').forEach(c => c.style.display = '');
+    document.title = prevTitle;
+    const ps = document.getElementById('hist-print-style');
+    if (ps) ps.remove();
+  }, 1000);
 }
 </script>
 </body>
